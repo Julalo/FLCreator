@@ -106,28 +106,31 @@ If you see a blue "Windows protected your PC" warning, click **More info → Run
 
 ### Step 5 — Connect to Claude Desktop
 
-1. Open (or create) the file at:
-   ```
-   C:\Users\YourName\AppData\Roaming\Claude\claude_desktop_config.json
-   ```
-   The `AppData` folder is hidden — paste the path directly into the File Explorer address bar.
+The easiest way is through Claude Desktop's built-in developer settings — no need to find config files manually.
 
-2. Add this block (the installer prints the exact paths for you):
+1. Open Claude Desktop
+2. Go to **Settings → Developer → Edit Config**
+3. That opens the `claude_desktop_config.json` file directly. Add:
    ```json
    {
      "mcpServers": {
        "fl-studio-producer-brain": {
-         "command": "C:\\Tools\\fl-studio-mcp\\venv\\Scripts\\python.exe",
-         "args": ["C:\\Tools\\fl-studio-mcp\\server.py"]
+         "command": "C:\\Users\\YourName\\FLCreator\\venv\\Scripts\\python.exe",
+         "args": ["C:\\Users\\YourName\\FLCreator\\server.py"]
        }
      }
    }
    ```
-   Replace `C:\\Tools\\fl-studio-mcp` with the actual folder where you extracted the project. Use double backslashes `\\` in JSON.
+   Replace `YourName` with your Windows username and adjust the path to wherever you cloned the repo.
 
-3. Save the file and **restart Claude Desktop**.
+4. Save the file and **fully quit Claude Desktop** (right-click the tray icon → Quit, not just close the window).
+5. Reopen Claude Desktop and start a **new conversation** — the hammer icon (🔨) should appear in the bottom-right of the chat input.
 
-4. Open a new conversation — you should see a hammer icon (🔨) in the bottom-right of the chat input. Click it to verify the `fl-studio-producer-brain` tools are listed.
+> **Can't find the config file manually?** Depending on how Claude Desktop was installed, the file may be at one of these locations:
+> - Standard install: `C:\Users\YourName\AppData\Roaming\Claude\claude_desktop_config.json`
+> - Microsoft Store install: `C:\Users\YourName\AppData\Local\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Roaming\Claude\claude_desktop_config.json`
+>
+> The Settings → Developer → Edit Config button always opens the right one regardless of install type.
 
 ### Step 5 (alternative) — Connect to Claude Code (CLI)
 
@@ -509,28 +512,31 @@ Si aparece la pantalla azul de "Windows protegió su equipo", haz clic en **Más
 
 ### Paso 5 — Conecta Claude Desktop
 
-1. Abre esta carpeta (pega la ruta en el Explorador de archivos):
-   ```
-   C:\Users\TuNombre\AppData\Roaming\Claude\
-   ```
-   La carpeta `AppData` está oculta. Pega la ruta directamente en la barra de dirección del Explorador.
+La forma más fácil es desde la propia configuración de Claude Desktop, sin buscar archivos a mano.
 
-2. Abre (o crea) el archivo `claude_desktop_config.json` y agrega:
+1. Abre Claude Desktop
+2. Ve a **Settings → Developer → Edit Config**
+3. Se abre directamente el archivo `claude_desktop_config.json`. Agrega:
    ```json
    {
      "mcpServers": {
        "fl-studio-producer-brain": {
-         "command": "C:\\Tools\\fl-studio-mcp\\venv\\Scripts\\python.exe",
-         "args": ["C:\\Tools\\fl-studio-mcp\\server.py"]
+         "command": "C:\\Users\\TuNombre\\FLCreator\\venv\\Scripts\\python.exe",
+         "args": ["C:\\Users\\TuNombre\\FLCreator\\server.py"]
        }
      }
    }
    ```
-   Cambia `C:\\Tools\\fl-studio-mcp` por la ruta real donde extrajiste el proyecto. En JSON las rutas de Windows llevan doble barra invertida `\\`.
+   Cambia `TuNombre` por tu usuario de Windows y ajusta la ruta a donde clonaste el repo. En JSON las barras de Windows van dobles `\\`.
 
-3. Guarda el archivo y **reinicia Claude Desktop** completamente (ciérralo desde la bandeja del sistema, no solo la ventana).
+4. Guarda el archivo y **cierra Claude Desktop por completo** (clic derecho en el ícono de la bandeja del sistema → Salir, no solo la X de la ventana).
+5. Vuelve a abrir Claude Desktop y abre una **conversación nueva** — el ícono de martillo (🔨) debería aparecer en la esquina inferior derecha.
 
-4. Abre una conversación nueva. Deberías ver un ícono de martillo (🔨) en la esquina inferior derecha del campo de texto. Haz clic para verificar que aparecen las herramientas de `fl-studio-producer-brain`.
+> **¿No encuentras Settings → Developer?** Dependiendo de cómo instalaste Claude Desktop, el archivo puede estar en:
+> - Instalación normal: `C:\Users\TuNombre\AppData\Roaming\Claude\claude_desktop_config.json`
+> - Instalación desde Microsoft Store: `C:\Users\TuNombre\AppData\Local\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Roaming\Claude\claude_desktop_config.json`
+>
+> El botón Settings → Developer → Edit Config abre el correcto sin importar cómo lo instalaste.
 
 ### Paso 5 (alternativa) — Conecta Claude Code (CLI)
 
