@@ -39,12 +39,6 @@ async def lifespan(server: FastMCP):
 
 mcp = FastMCP(
     name="fl-studio-producer-brain",
-    version="1.0.0",
-    description=(
-        "FL Studio Producer Brain — gives Claude full knowledge of your FL Studio setup: "
-        "sample library, installed VST plugins, preset finder/installer, MIDI sender, "
-        "and .flp project reader."
-    ),
     lifespan=lifespan,
 )
 
