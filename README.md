@@ -6,6 +6,30 @@ An MCP (Model Context Protocol) server that gives Claude full knowledge of your 
 
 ---
 
+## Before you start — important notices
+
+> **These apply to both Windows and Mac users. Read before installing.**
+
+**FL Studio version compatibility**
+This server works with any version of FL Studio for the main features (sample scanning, plugin reading, preset install, MIDI). The `.flp` project file parser (`read_project` tool) is only reliable on FL Studio 20 and 21 — older or newer versions may not parse correctly or may error out. If you are on an older version and `read_project` fails, the rest of the server still works fine.
+
+**Windowed mode required for preset drag**
+The automatic preset drag (`load_preset_in_fl`) opens Windows Explorer at the preset folder and drags the file into FL Studio's channel rack. For this to work, FL Studio must be in windowed mode (not maximized, not fullscreen). If FL is maximized, the tool will tell you and refuse to proceed rather than dropping the file in the wrong place.
+
+**The drag targets the first visible channel by default**
+When you call `load_preset_in_fl` without specifying `channel_index`, the preset drops onto the first channel in the rack. If you want it on a specific channel, pass the index (0 = first, 1 = second, etc.). This is because FL Studio does not expose its UI state to external programs.
+
+**MIDI requires setup before it works**
+`send_notes` does nothing until you configure a virtual MIDI port AND tell FL Studio to listen to it. On Windows this means installing LoopMIDI. On Mac the IAC Driver is built-in but must be activated manually. Both steps are covered in the install guide below. If you skip this, the tool will return a clear error explaining exactly what to do.
+
+**Linux is not supported**
+FL Studio does not run natively on Linux. The sample scanner and preset finder tools work on Linux, but anything that interacts with FL Studio directly (drag, MIDI, plugin reading) does not.
+
+**No API keys needed**
+This server makes no calls to Anthropic's API and requires no paid accounts. The only network access is the preset search (httpx requests to public websites) and the plugin researcher, which queries Wikipedia as a fallback.
+
+---
+
 ## What it does
 
 - Scans and classifies your entire sample library (kick, snare, 808, hi-hat, loop, vocal, etc.) using a three-tier ML classifier
@@ -64,7 +88,7 @@ Click **Code → Download ZIP** on GitHub, extract the folder anywhere (e.g. `C:
 
 **Option B — Git:**
 ```
-git clone https://github.com/yourusername/fl-studio-mcp.git
+git clone https://github.com/Julalo/FLCreator.git
 ```
 
 ### Step 4 — Run the installer
@@ -82,28 +106,31 @@ If you see a blue "Windows protected your PC" warning, click **More info → Run
 
 ### Step 5 — Connect to Claude Desktop
 
-1. Open (or create) the file at:
-   ```
-   C:\Users\YourName\AppData\Roaming\Claude\claude_desktop_config.json
-   ```
-   The `AppData` folder is hidden — paste the path directly into the File Explorer address bar.
+The easiest way is through Claude Desktop's built-in developer settings — no need to find config files manually.
 
-2. Add this block (the installer prints the exact paths for you):
+1. Open Claude Desktop
+2. Go to **Settings → Developer → Edit Config**
+3. That opens the `claude_desktop_config.json` file directly. Add:
    ```json
    {
      "mcpServers": {
        "fl-studio-producer-brain": {
-         "command": "C:\\Tools\\fl-studio-mcp\\venv\\Scripts\\python.exe",
-         "args": ["C:\\Tools\\fl-studio-mcp\\server.py"]
+         "command": "C:\\Users\\YourName\\FLCreator\\venv\\Scripts\\python.exe",
+         "args": ["C:\\Users\\YourName\\FLCreator\\server.py"]
        }
      }
    }
    ```
-   Replace `C:\\Tools\\fl-studio-mcp` with the actual folder where you extracted the project. Use double backslashes `\\` in JSON.
+   Replace `YourName` with your Windows username and adjust the path to wherever you cloned the repo.
 
-3. Save the file and **restart Claude Desktop**.
+4. Save the file and **fully quit Claude Desktop** (right-click the tray icon → Quit, not just close the window).
+5. Reopen Claude Desktop and start a **new conversation** — the hammer icon (🔨) should appear in the bottom-right of the chat input.
 
-4. Open a new conversation — you should see a hammer icon (🔨) in the bottom-right of the chat input. Click it to verify the `fl-studio-producer-brain` tools are listed.
+> **Can't find the config file manually?** Depending on how Claude Desktop was installed, the file may be at one of these locations:
+> - Standard install: `C:\Users\YourName\AppData\Roaming\Claude\claude_desktop_config.json`
+> - Microsoft Store install: `C:\Users\YourName\AppData\Local\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Roaming\Claude\claude_desktop_config.json`
+>
+> The Settings → Developer → Edit Config button always opens the right one regardless of install type.
 
 ### Step 5 (alternative) — Connect to Claude Code (CLI)
 
@@ -154,6 +181,25 @@ Open `config.json` and adjust these fields if needed:
 
 The installer fills your username automatically. The only thing you may need to change is `scan_folders` if your samples are on a different drive (e.g. `D:\\Samples`).
 
+### Step 7 — Freesound API key (optional, for automatic sample downloads)
+
+This unlocks the `search_freesound` and `download_freesound_samples` tools, which let Claude search and download samples directly without needing a browser.
+
+1. Go to [freesound.org/apiv2/apply](https://freesound.org/apiv2/apply/) — free account, instant approval.
+2. Copy your API key.
+3. Open `config.json` and add this line before the last `}`:
+   ```json
+   "freesound_api_key": "paste_your_key_here"
+   ```
+
+> **Important:** `config.json` is never uploaded to GitHub (it's in `.gitignore`). Each user manages their own key locally. Do not copy the key into `config.example.json`.
+
+Once added, you can say things like:
+- *"Search 10 reggaeton samples on Freesound"*
+- *"Download those samples into my Samples folder"*
+
+Claude will search, download, and classify them automatically.
+
 ---
 
 ## Mac Installation
@@ -191,8 +237,8 @@ In FL Studio: **Options → MIDI Settings → Input** → enable `IAC Driver Bus
 ### Step 3 — Download or clone the project
 
 ```bash
-git clone https://github.com/yourusername/fl-studio-mcp.git ~/fl-studio-mcp
-cd ~/fl-studio-mcp
+git clone https://github.com/Julalo/FLCreator.git ~/FLCreator
+cd ~/FLCreator
 ```
 
 Or download the ZIP from GitHub and extract it to your home folder.
@@ -385,6 +431,30 @@ Una guía de instalación completa en español para **FL Studio Producer Brain**
 
 ---
 
+## Antes de empezar — avisos importantes
+
+> **Aplican tanto a Windows como a Mac. Léelos antes de instalar.**
+
+**Compatibilidad con versiones de FL Studio**
+El servidor funciona con cualquier versión de FL Studio para las funciones principales (escaneo de samples, lectura de plugins, instalación de presets, MIDI). El lector de proyectos `.flp` (`read_project`) solo es fiable en FL Studio 20 y 21 — versiones más antiguas o más nuevas pueden no parsear correctamente. Si usas una versión antigua y `read_project` falla, el resto del servidor sigue funcionando sin problema.
+
+**FL Studio debe estar en modo ventana para el drag de presets**
+La herramienta `load_preset_in_fl` abre el Explorador de Windows en la carpeta del preset y arrastra el archivo al channel rack de FL Studio. Para que funcione, FL Studio debe estar en modo ventana (no maximizado, no pantalla completa). Si FL está maximizado, la herramienta te avisará y no intentará el drag para evitar soltar el archivo en el lugar equivocado.
+
+**El drag cae en el primer canal por defecto**
+Si llamas a `load_preset_in_fl` sin especificar `channel_index`, el preset cae en el primer canal del rack. Si quieres un canal concreto, pasa el índice (0 = primero, 1 = segundo, etc.). Esto es así porque FL Studio no expone el estado de su interfaz a programas externos.
+
+**El MIDI necesita configuración previa**
+`send_notes` no hace nada hasta que configures un puerto MIDI virtual Y le digas a FL Studio que lo escuche. En Windows esto significa instalar LoopMIDI. En Mac el IAC Driver ya viene instalado pero hay que activarlo. Los dos pasos están explicados en la guía de instalación de abajo. Si te los saltas, la herramienta devuelve un error claro indicando exactamente qué hacer.
+
+**Linux no está soportado**
+FL Studio no corre de forma nativa en Linux. El escáner de samples y el buscador de presets funcionan en Linux, pero todo lo que interactúa directamente con FL Studio (drag, MIDI, lectura de plugins) no.
+
+**No hacen falta API keys**
+Este servidor no llama a la API de Anthropic y no requiere cuentas de pago. El único acceso a internet es la búsqueda de presets (peticiones HTTP a webs públicas) y el investigador de plugins, que usa Wikipedia como fallback.
+
+---
+
 # Guía de Instalación (Español)
 
 ## ¿Qué es esto?
@@ -443,7 +513,7 @@ Haz clic en **Code → Download ZIP** en GitHub, extrae la carpeta donde quieras
 
 **Opción B — Git:**
 ```
-git clone https://github.com/yourusername/fl-studio-mcp.git
+git clone https://github.com/Julalo/FLCreator.git
 ```
 
 ### Paso 4 — Ejecuta el instalador
@@ -461,28 +531,31 @@ Si aparece la pantalla azul de "Windows protegió su equipo", haz clic en **Más
 
 ### Paso 5 — Conecta Claude Desktop
 
-1. Abre esta carpeta (pega la ruta en el Explorador de archivos):
-   ```
-   C:\Users\TuNombre\AppData\Roaming\Claude\
-   ```
-   La carpeta `AppData` está oculta. Pega la ruta directamente en la barra de dirección del Explorador.
+La forma más fácil es desde la propia configuración de Claude Desktop, sin buscar archivos a mano.
 
-2. Abre (o crea) el archivo `claude_desktop_config.json` y agrega:
+1. Abre Claude Desktop
+2. Ve a **Settings → Developer → Edit Config**
+3. Se abre directamente el archivo `claude_desktop_config.json`. Agrega:
    ```json
    {
      "mcpServers": {
        "fl-studio-producer-brain": {
-         "command": "C:\\Tools\\fl-studio-mcp\\venv\\Scripts\\python.exe",
-         "args": ["C:\\Tools\\fl-studio-mcp\\server.py"]
+         "command": "C:\\Users\\TuNombre\\FLCreator\\venv\\Scripts\\python.exe",
+         "args": ["C:\\Users\\TuNombre\\FLCreator\\server.py"]
        }
      }
    }
    ```
-   Cambia `C:\\Tools\\fl-studio-mcp` por la ruta real donde extrajiste el proyecto. En JSON las rutas de Windows llevan doble barra invertida `\\`.
+   Cambia `TuNombre` por tu usuario de Windows y ajusta la ruta a donde clonaste el repo. En JSON las barras de Windows van dobles `\\`.
 
-3. Guarda el archivo y **reinicia Claude Desktop** completamente (ciérralo desde la bandeja del sistema, no solo la ventana).
+4. Guarda el archivo y **cierra Claude Desktop por completo** (clic derecho en el ícono de la bandeja del sistema → Salir, no solo la X de la ventana).
+5. Vuelve a abrir Claude Desktop y abre una **conversación nueva** — el ícono de martillo (🔨) debería aparecer en la esquina inferior derecha.
 
-4. Abre una conversación nueva. Deberías ver un ícono de martillo (🔨) en la esquina inferior derecha del campo de texto. Haz clic para verificar que aparecen las herramientas de `fl-studio-producer-brain`.
+> **¿No encuentras Settings → Developer?** Dependiendo de cómo instalaste Claude Desktop, el archivo puede estar en:
+> - Instalación normal: `C:\Users\TuNombre\AppData\Roaming\Claude\claude_desktop_config.json`
+> - Instalación desde Microsoft Store: `C:\Users\TuNombre\AppData\Local\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Roaming\Claude\claude_desktop_config.json`
+>
+> El botón Settings → Developer → Edit Config abre el correcto sin importar cómo lo instalaste.
 
 ### Paso 5 (alternativa) — Conecta Claude Code (CLI)
 
@@ -506,6 +579,25 @@ Abre `config.json`. El instalador ya rellenó tu nombre de usuario. Solo necesit
   }
 }
 ```
+
+### Paso 7 — API key de Freesound (opcional, para descargar samples automáticamente)
+
+Esto activa las herramientas `search_freesound` y `download_freesound_samples`, que permiten a Claude buscar y descargar samples directamente sin abrir el navegador.
+
+1. Ve a [freesound.org/apiv2/apply](https://freesound.org/apiv2/apply/) — cuenta gratuita, aprobación instantánea.
+2. Copia tu API key.
+3. Abre `config.json` y añade esta línea antes del último `}`:
+   ```json
+   "freesound_api_key": "pega_tu_key_aqui"
+   ```
+
+> **Importante:** `config.json` nunca se sube a GitHub (está en `.gitignore`). Cada usuario gestiona su propia key en local. No copies la key en `config.example.json`.
+
+Una vez configurado puedes decirle cosas como:
+- *"Búscame 10 samples de reggaeton en Freesound"*
+- *"Descarga esos samples en mi carpeta de Samples"*
+
+Claude buscará, descargará y clasificará los samples automáticamente.
 
 ---
 
@@ -544,8 +636,8 @@ En FL Studio: **Options → MIDI Settings → Input** → activa `IAC Driver Bus
 ### Paso 3 — Descarga el proyecto
 
 ```bash
-git clone https://github.com/yourusername/fl-studio-mcp.git ~/fl-studio-mcp
-cd ~/fl-studio-mcp
+git clone https://github.com/Julalo/FLCreator.git ~/FLCreator
+cd ~/FLCreator
 ```
 
 O descarga el ZIP desde GitHub y extráelo en tu carpeta home.

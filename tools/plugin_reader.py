@@ -112,7 +112,7 @@ async def read_plugins(
         cache = _load_cache()
         if cache:
             if ctx:
-                await ctx.log_info(f"Returning {len(cache)} plugins from cache.")
+                await ctx.info(f"Returning {len(cache)} plugins from cache.")
             by_type: dict[str, int] = {}
             for v in cache.values():
                 t = v.get("type", "unknown")
@@ -124,7 +124,7 @@ async def read_plugins(
             }
 
     if ctx:
-        await ctx.log_info("Scanning FL Studio plugin database and VST folders...")
+        await ctx.info("Scanning FL Studio plugin database and VST folders...")
 
     all_plugins: list[dict] = []
 
@@ -147,7 +147,7 @@ async def read_plugins(
     _save_cache(cache_data)
 
     if ctx:
-        await ctx.log_info(f"Found {len(cache_data)} unique plugins.")
+        await ctx.info(f"Found {len(cache_data)} unique plugins.")
 
     by_type = {}
     for v in cache_data.values():
