@@ -20,5 +20,6 @@
     "default_bpm": 140
   },
   "cache_folder": "./cache",
-  "auto_research_plugins": true
+  "auto_research_plugins": true,
+  "freesound_api_key": ""
 }

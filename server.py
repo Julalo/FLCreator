@@ -26,6 +26,7 @@ from tools.preset_installer import install_preset as _install_preset, load_prese
 from tools.midi_sender import send_notes as _send_notes
 from tools.project_reader import read_project as _read_project
 from tools.sample_downloader import find_sample_packs as _find_sample_packs, download_sample_pack as _download_sample_pack
+from tools.freesound_downloader import search_freesound as _search_freesound, download_freesound_samples as _download_freesound_samples
 
 
 # ── Lifespan ──────────────────────────────────────────────────────────────────
@@ -692,6 +693,108 @@ async def download_sample_pack(input: DownloadSamplePackInput, ctx: Context) -> 
         )
     except Exception as exc:
         return _handle_error(exc, "download_sample_pack")
+
+
+# ── Freesound tools ────────────────────────────────────────────────────────────
+
+class SearchFreesoundInput(BaseModel):
+    genre: str = Field(
+        ...,
+        description="Genre to search (e.g. 'reggaeton', 'trap', 'lo-fi', 'uk drill').",
+        min_length=1,
+    )
+    sound_type: Optional[str] = Field(
+        None,
+        description="Type of sound: kick, snare, hihat, loop, 808, bass, melody, etc.",
+    )
+    num_results: int = Field(
+        10,
+        ge=1,
+        le=50,
+        description="Number of results to return (max 50).",
+    )
+
+
+class DownloadFreesoundInput(BaseModel):
+    preview_urls: List[str] = Field(
+        ...,
+        description="List of preview_url values from search_freesound results.",
+        min_length=1,
+    )
+    pack_name: str = Field(
+        ...,
+        description="Folder name for the downloaded samples.",
+        min_length=1,
+    )
+    destination_folder: Optional[str] = Field(
+        None,
+        description="Destination folder. Uses first scan_folder from config if omitted.",
+    )
+    auto_scan: bool = Field(
+        True,
+        description="Automatically scan and classify downloaded samples.",
+    )
+
+
+@mcp.tool(
+    annotations={
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": True,
+    }
+)
+async def search_freesound(input: SearchFreesoundInput, ctx: Context) -> dict:
+    """
+    Search Freesound.org for free samples by genre using their public API.
+
+    Returns a list of sounds with direct preview URLs (HQ 192kbps MP3).
+    Pass the preview_url values to download_freesound_samples to download them automatically.
+
+    Requires a free API key in config.json → freesound_api_key.
+    Get one at https://freesound.org/apiv2/apply/ (instant, free).
+    """
+    try:
+        return await _search_freesound(
+            genre=input.genre,
+            sound_type=input.sound_type,
+            num_results=input.num_results,
+            ctx=ctx,
+        )
+    except Exception as exc:
+        return _handle_error(exc, "search_freesound")
+
+
+@mcp.tool(
+    annotations={
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": True,
+    }
+)
+async def download_freesound_samples(input: DownloadFreesoundInput, ctx: Context) -> dict:
+    """
+    Download Freesound preview files using direct URLs from search_freesound results.
+
+    Downloads HQ 192kbps MP3 previews into a named folder in your samples directory.
+    If auto_scan=True (default), immediately classifies all downloaded samples.
+
+    The full workflow:
+    1. search_freesound(genre='reggaeton') → get preview_urls
+    2. download_freesound_samples(preview_urls=[...], pack_name='reggaeton pack')
+    3. Samples appear in get_samples() automatically.
+    """
+    try:
+        return await _download_freesound_samples(
+            preview_urls=input.preview_urls,
+            pack_name=input.pack_name,
+            destination_folder=input.destination_folder,
+            auto_scan=input.auto_scan,
+            ctx=ctx,
+        )
+    except Exception as exc:
+        return _handle_error(exc, "download_freesound_samples")
 
 
 # ── Entry point ────────────────────────────────────────────────────────────────
