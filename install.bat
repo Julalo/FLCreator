@@ -104,26 +104,22 @@ if exist "!FL_USER_DATA!" (
 )
 
 :: Update config.json with actual username
-python -c "
-import json, os, re, pathlib
+:: Write the helper script to a temp file to avoid quoting issues inside python -c
+echo import json, os, pathlib > _setup_config.py
+echo config_path = pathlib.Path('config.json') >> _setup_config.py
+echo text = config_path.read_text(encoding='utf-8') >> _setup_config.py
+echo text = text.replace('{USER}', os.environ.get('USERNAME', 'User')) >> _setup_config.py
+echo cfg = json.loads(text) >> _setup_config.py
+echo fl_data = os.path.join(os.environ.get('USERPROFILE',''), 'Documents', 'Image-Line', 'FL Studio') >> _setup_config.py
+echo if pathlib.Path(fl_data).exists(): >> _setup_config.py
+echo     cfg['fl_studio']['user_data_folder'] = fl_data >> _setup_config.py
+echo samples_default = os.path.join(os.environ.get('USERPROFILE',''), 'Music', 'Samples') >> _setup_config.py
+echo cfg['samples']['scan_folders'] = [samples_default] >> _setup_config.py
+echo config_path.write_text(json.dumps(cfg, indent=2, ensure_ascii=False), encoding='utf-8') >> _setup_config.py
+echo print('  config.json updated with your user paths.') >> _setup_config.py
 
-config_path = pathlib.Path('config.json')
-text = config_path.read_text(encoding='utf-8')
-username = os.environ.get('USERNAME', 'User')
-text = text.replace('{USER}', username)
-
-cfg = json.loads(text)
-
-fl_data = r'%USERPROFILE%\Documents\Image-Line\FL Studio'.replace(r'%USERPROFILE%', os.environ.get('USERPROFILE', ''))
-if pathlib.Path(fl_data).exists():
-    cfg['fl_studio']['user_data_folder'] = fl_data
-
-samples_default = r'%USERPROFILE%\Music\Samples'.replace(r'%USERPROFILE%', os.environ.get('USERPROFILE', ''))
-cfg['samples']['scan_folders'] = [samples_default]
-
-config_path.write_text(json.dumps(cfg, indent=2, ensure_ascii=False), encoding='utf-8')
-print('  config.json updated with your user paths.')
-"
+python _setup_config.py
+del _setup_config.py
 
 if !FL_FOUND! EQU 0 (
     echo  WARNING: FL Studio user data folder not found at default location.
