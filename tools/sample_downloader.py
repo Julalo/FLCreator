@@ -24,6 +24,60 @@ from tools.sample_scanner import scan_samples as _scan_samples
 # Format: {genre: [{name, url, source, description, tags}]}
 
 _CURATED_PACKS: dict[str, list[dict]] = {
+    "reggaeton": [
+        {
+            "name": "Reggaeton Drum Loops — Looperman",
+            "source": "Looperman",
+            "url": "https://www.looperman.com/loops/search?term=reggaeton&free=1",
+            "description": "Reggaeton and dembow drum loops, royalty-free direct downloads.",
+            "tags": ["reggaeton", "dembow", "latin", "loop"],
+            "direct": False,
+        },
+        {
+            "name": "Dembow Loops — Looperman",
+            "source": "Looperman",
+            "url": "https://www.looperman.com/loops/search?term=dembow&free=1",
+            "description": "Dembow rhythm loops (the backbone of reggaeton), royalty-free.",
+            "tags": ["reggaeton", "dembow", "loop", "free"],
+            "direct": False,
+        },
+        {
+            "name": "Latin Percussion Loops — Looperman",
+            "source": "Looperman",
+            "url": "https://www.looperman.com/loops/search?term=latin+percussion&free=1",
+            "description": "Latin percussion loops including congas, bongos and timbales.",
+            "tags": ["reggaeton", "latin", "percussion", "loop"],
+            "direct": False,
+        },
+        {
+            "name": "SampleFocus Reggaeton Samples",
+            "source": "SampleFocus",
+            "url": "https://samplefocus.com/samples?q=reggaeton",
+            "description": "Individual reggaeton samples with direct download.",
+            "tags": ["reggaeton", "one-shot", "free"],
+            "direct": False,
+        },
+    ],
+    "latin": [
+        {
+            "name": "Latin Loops — Looperman",
+            "source": "Looperman",
+            "url": "https://www.looperman.com/loops/search?term=latin&free=1",
+            "description": "Latin music loops, royalty-free.",
+            "tags": ["latin", "reggaeton", "salsa", "loop"],
+            "direct": False,
+        },
+    ],
+    "dembow": [
+        {
+            "name": "Dembow Loops — Looperman",
+            "source": "Looperman",
+            "url": "https://www.looperman.com/loops/search?term=dembow&free=1",
+            "description": "Dembow rhythm loops, royalty-free.",
+            "tags": ["dembow", "reggaeton", "loop"],
+            "direct": False,
+        },
+    ],
     "uk drill": [
         {
             "name": "Cymatics Lethal UK Drill Sample Pack (Free)",
@@ -127,6 +181,10 @@ _GENRE_ALIASES: dict[str, str] = {
     "boom bap": "hip hop",
     "dnb": "drum and bass",
     "d&b": "drum and bass",
+    "regueton": "reggaeton",
+    "reggeaton": "reggaeton",
+    "latin trap": "reggaeton",
+    "perreo": "reggaeton",
 }
 
 HEADERS = {
@@ -139,40 +197,61 @@ HEADERS = {
 
 
 async def _scrape_looperman(genre: str, client: httpx.AsyncClient) -> list[dict]:
-    """Scrape Looperman search results for free loops."""
+    """Scrape Looperman search results and return direct .wav download links."""
     results = []
     url = f"https://www.looperman.com/loops/search?term={quote_plus(genre)}&free=1"
     try:
-        resp = await client.get(url, timeout=12.0)
+        resp = await client.get(url, timeout=15.0)
         if resp.status_code != 200:
             return results
 
         text = resp.text
-        # Extract loop entries — Looperman wraps each loop in a div with class "loop"
-        # We look for download links with .wav or .mp3
+
+        # Looperman embeds download URLs in data attributes and JS vars
+        # Pattern 1: direct media URLs
         dl_pattern = re.compile(
-            r'href="(https://www\.looperman\.com/media/[^"]+\.(?:wav|mp3))"',
+            r'["\']?(https?://(?:www\.)?looperman\.com/media/[^\s\'"<>]+\.(?:wav|mp3))["\']?',
             re.I
         )
-        name_pattern = re.compile(
-            r'class="loop-title"[^>]*>\s*<a[^>]*>([^<]+)</a>',
+        # Pattern 2: loop page links with title
+        loop_links = re.compile(
+            r'href="(https?://www\.looperman\.com/loops/detail/\d+/[^"]+)"[^>]*>\s*([^<]{3,80})',
             re.I
         )
+        # Pattern 3: loop title text nearby
+        title_pattern = re.compile(
+            r'class="[^"]*loop[^"]*title[^"]*"[^>]*>.*?<a[^>]*>([^<]{3,80})</a>',
+            re.I | re.S
+        )
 
-        names = name_pattern.findall(text)
-        dls = dl_pattern.findall(text)
+        direct_urls = dl_pattern.findall(text)
+        titles = title_pattern.findall(text)
 
-        for i, dl_url in enumerate(dls[:8]):
-            name = names[i].strip() if i < len(names) else f"{genre} loop {i+1}"
+        for i, dl_url in enumerate(direct_urls[:10]):
+            name = titles[i].strip() if i < len(titles) else f"{genre} loop {i + 1}"
             results.append({
                 "name": name,
                 "source": "Looperman",
                 "url": dl_url,
-                "description": f"Free {genre} loop from Looperman (royalty-free).",
+                "description": f"Free {genre} loop — royalty-free, no attribution required.",
                 "tags": [genre, "loop", "free"],
                 "direct": True,
-                "extension": Path(dl_url).suffix.lower(),
+                "extension": Path(dl_url.split("?")[0]).suffix.lower() or ".wav",
             })
+
+        # If no direct links found, add page links so user can browse
+        if not results:
+            for href, title in loop_links.findall(text)[:5]:
+                results.append({
+                    "name": title.strip(),
+                    "source": "Looperman",
+                    "url": href,
+                    "description": f"Free {genre} loop page — click to stream and download.",
+                    "tags": [genre, "loop", "free"],
+                    "direct": False,
+                    "extension": ".wav",
+                })
+
     except Exception:
         pass
     return results
@@ -183,37 +262,41 @@ async def _scrape_samplefocus(genre: str, client: httpx.AsyncClient) -> list[dic
     results = []
     url = f"https://samplefocus.com/samples?q={quote_plus(genre)}"
     try:
-        resp = await client.get(url, timeout=12.0)
+        resp = await client.get(url, timeout=15.0)
         if resp.status_code != 200:
             return results
 
         text = resp.text
-        # SampleFocus lists samples with their download links
-        dl_pattern = re.compile(
-            r'"download_url"\s*:\s*"([^"]+)"',
-            re.I
-        )
-        name_pattern = re.compile(
-            r'"name"\s*:\s*"([^"]+)"',
-            re.I
-        )
 
-        names = name_pattern.findall(text)
-        dls = dl_pattern.findall(text)
+        # SampleFocus embeds sample data in JSON inside script tags
+        json_block = re.compile(r'"samples"\s*:\s*(\[.*?\])', re.S)
+        name_pat = re.compile(r'"name"\s*:\s*"([^"]+)"')
+        dl_pat = re.compile(r'"file_url"\s*:\s*"([^"]+\.(?:wav|mp3))"', re.I)
+        slug_pat = re.compile(r'"slug"\s*:\s*"([^"]+)"')
 
-        for i, dl_url in enumerate(dls[:8]):
-            name = names[i].strip() if i < len(names) else f"{genre} sample {i+1}"
+        names = name_pat.findall(text)
+        dl_urls = dl_pat.findall(text)
+        slugs = slug_pat.findall(text)
+
+        for i, dl_url in enumerate(dl_urls[:8]):
             if not dl_url.startswith("http"):
                 dl_url = "https://samplefocus.com" + dl_url
+            name = names[i].strip() if i < len(names) else f"{genre} sample {i + 1}"
+            page_url = (
+                f"https://samplefocus.com/samples/{slugs[i]}"
+                if i < len(slugs) else "https://samplefocus.com"
+            )
             results.append({
                 "name": name,
                 "source": "SampleFocus",
                 "url": dl_url,
+                "page_url": page_url,
                 "description": f"Free {genre} sample from SampleFocus.",
-                "tags": [genre, "free"],
+                "tags": [genre, "free", "one-shot"],
                 "direct": True,
-                "extension": ".wav",
+                "extension": Path(dl_url.split("?")[0]).suffix.lower() or ".wav",
             })
+
     except Exception:
         pass
     return results
