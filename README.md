@@ -88,7 +88,7 @@ Click **Code → Download ZIP** on GitHub, extract the folder anywhere (e.g. `C:
 
 **Option B — Git:**
 ```
-git clone https://github.com/yourusername/fl-studio-mcp.git
+git clone https://github.com/Julalo/FLCreator.git
 ```
 
 ### Step 4 — Run the installer
@@ -215,8 +215,8 @@ In FL Studio: **Options → MIDI Settings → Input** → enable `IAC Driver Bus
 ### Step 3 — Download or clone the project
 
 ```bash
-git clone https://github.com/yourusername/fl-studio-mcp.git ~/fl-studio-mcp
-cd ~/fl-studio-mcp
+git clone https://github.com/Julalo/FLCreator.git ~/FLCreator
+cd ~/FLCreator
 ```
 
 Or download the ZIP from GitHub and extract it to your home folder.
@@ -491,7 +491,7 @@ Haz clic en **Code → Download ZIP** en GitHub, extrae la carpeta donde quieras
 
 **Opción B — Git:**
 ```
-git clone https://github.com/yourusername/fl-studio-mcp.git
+git clone https://github.com/Julalo/FLCreator.git
 ```
 
 ### Paso 4 — Ejecuta el instalador
@@ -592,8 +592,8 @@ En FL Studio: **Options → MIDI Settings → Input** → activa `IAC Driver Bus
 ### Paso 3 — Descarga el proyecto
 
 ```bash
-git clone https://github.com/yourusername/fl-studio-mcp.git ~/fl-studio-mcp
-cd ~/fl-studio-mcp
+git clone https://github.com/Julalo/FLCreator.git ~/FLCreator
+cd ~/FLCreator
 ```
 
 O descarga el ZIP desde GitHub y extráelo en tu carpeta home.
