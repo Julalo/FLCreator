@@ -246,7 +246,7 @@ async def find_sample_packs(
 
     # Live scraping
     if ctx:
-        await ctx.log_info(f"Scraping Looperman and SampleFocus for '{genre}'...")
+        await ctx.info(f"Scraping Looperman and SampleFocus for '{genre}'...")
 
     async with httpx.AsyncClient(headers=HEADERS, follow_redirects=True) as client:
         looperman = await _scrape_looperman(genre_lower, client)
@@ -272,7 +272,7 @@ async def find_sample_packs(
             unique.append(r)
 
     if ctx:
-        await ctx.log_info(f"Found {len(unique)} sample packs/files for '{genre}'.")
+        await ctx.info(f"Found {len(unique)} sample packs/files for '{genre}'.")
 
     return {
         "genre": genre,
@@ -308,7 +308,7 @@ async def download_sample_pack(
     pack_folder.mkdir(parents=True, exist_ok=True)
 
     if ctx:
-        await ctx.log_info(f"Downloading from {url} ...")
+        await ctx.info(f"Downloading from {url} ...")
 
     # Download
     try:
@@ -347,7 +347,7 @@ async def download_sample_pack(
 
         if ext == ".zip":
             if ctx:
-                await ctx.log_info("Extracting zip archive...")
+                await ctx.info("Extracting zip archive...")
             try:
                 with zipfile.ZipFile(tmp_file, "r") as zf:
                     zf.extractall(tmpdir)
@@ -388,13 +388,13 @@ async def download_sample_pack(
         }
 
     if ctx:
-        await ctx.log_info(f"Extracted {len(extracted_files)} audio files to {pack_folder}")
+        await ctx.info(f"Extracted {len(extracted_files)} audio files to {pack_folder}")
 
     # Auto-scan the new samples
     scan_result = None
     if auto_scan:
         if ctx:
-            await ctx.log_info("Scanning new samples...")
+            await ctx.info("Scanning new samples...")
         scan_result = await _scan_samples(
             folder_path=str(pack_folder),
             force_rescan=True,

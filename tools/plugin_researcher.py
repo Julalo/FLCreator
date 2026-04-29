@@ -156,14 +156,14 @@ async def research_plugin(
     # Check if already researched
     if name_key in cache and cache[name_key].get("researched"):
         if ctx:
-            await ctx.log_info(f"Returning cached research for '{plugin_name}'")
+            await ctx.info(f"Returning cached research for '{plugin_name}'")
         return {"plugin": cache[name_key], "source": "cache"}
 
     # Check built-in knowledge base first
     known = _KNOWN_PLUGINS.get(name_key)
     if known:
         if ctx:
-            await ctx.log_info(f"Found '{plugin_name}' in built-in knowledge base.")
+            await ctx.info(f"Found '{plugin_name}' in built-in knowledge base.")
         plugin_data = cache.get(name_key, {"name": plugin_name})
         plugin_data.update(known)
         plugin_data["researched"] = True
@@ -173,7 +173,7 @@ async def research_plugin(
 
     # Web fetch as fallback
     if ctx:
-        await ctx.log_info(f"Fetching online info for '{plugin_name}'...")
+        await ctx.info(f"Fetching online info for '{plugin_name}'...")
 
     web_info = await _fetch_plugin_info_web(plugin_name)
 
@@ -184,6 +184,6 @@ async def research_plugin(
     _save_cache(cache)
 
     if ctx:
-        await ctx.log_info(f"Research complete for '{plugin_name}'.")
+        await ctx.info(f"Research complete for '{plugin_name}'.")
 
     return {"plugin": plugin_data, "source": "web"}

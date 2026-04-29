@@ -94,7 +94,7 @@ async def send_notes(
         }
 
     if ctx:
-        await ctx.log_info(f"Sending {len(notes)} notes via MIDI port '{actual_port}'")
+        await ctx.info(f"Sending {len(notes)} notes via MIDI port '{actual_port}'")
 
     actual_bpm = bpm or cfg.default_bpm()
     seconds_per_beat = 60.0 / actual_bpm
@@ -141,7 +141,7 @@ async def send_notes(
     await asyncio.to_thread(_send_blocking)
 
     if ctx:
-        await ctx.log_info(f"Sent {sent}/{len(notes)} notes. Errors: {len(errors)}")
+        await ctx.info(f"Sent {sent}/{len(notes)} notes. Errors: {len(errors)}")
 
     result = {
         "success": sent == len(notes),

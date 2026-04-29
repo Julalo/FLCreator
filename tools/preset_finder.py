@@ -132,7 +132,7 @@ async def find_presets(
         for source_name, url_template in _SOURCES:
             url = url_template.format(query=encoded)
             if ctx:
-                await ctx.log_info(f"Searching {source_name}...")
+                await ctx.info(f"Searching {source_name}...")
             found = await _search_source(client, source_name, url)
             # Enrich with genre/plugin context
             for item in found:
@@ -167,7 +167,7 @@ async def find_presets(
         })
 
     if ctx:
-        await ctx.log_info(f"Found {len(unique)} preset results for {plugin_name} / {genre}.")
+        await ctx.info(f"Found {len(unique)} preset results for {plugin_name} / {genre}.")
 
     return {
         "query": {

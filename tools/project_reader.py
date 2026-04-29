@@ -39,7 +39,7 @@ async def read_project(
         }
 
     if ctx:
-        await ctx.log_info(f"Parsing project: {flp.name}")
+        await ctx.info(f"Parsing project: {flp.name}")
 
     try:
         project = pyflp.parse(str(flp))
@@ -100,7 +100,7 @@ async def read_project(
             channels.append(ch_data)
     except Exception as exc:
         if ctx:
-            await ctx.log_error(f"Error reading channels: {exc}")
+            await ctx.error(f"Error reading channels: {exc}")
 
     result["channels"] = channels
     result["channel_count"] = len(channels)
@@ -121,7 +121,7 @@ async def read_project(
             patterns.append(pat_data)
     except Exception as exc:
         if ctx:
-            await ctx.log_error(f"Error reading patterns: {exc}")
+            await ctx.error(f"Error reading patterns: {exc}")
 
     result["patterns"] = patterns
     result["pattern_count"] = len(patterns)
@@ -142,7 +142,7 @@ async def read_project(
     result["mixer_track_count"] = len(mixer_tracks)
 
     if ctx:
-        await ctx.log_info(
+        await ctx.info(
             f"Parsed: {result.get('channel_count', 0)} channels, "
             f"{result.get('pattern_count', 0)} patterns, "
             f"BPM={result.get('bpm')}"

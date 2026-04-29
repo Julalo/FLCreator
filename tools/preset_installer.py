@@ -81,7 +81,7 @@ async def install_preset(
     ctx: Optional[Context] = None,
 ) -> dict:
     if ctx:
-        await ctx.log_info(f"Downloading preset from {preset_url} ...")
+        await ctx.info(f"Downloading preset from {preset_url} ...")
 
     try:
         async with httpx.AsyncClient(
@@ -111,7 +111,7 @@ async def install_preset(
 
         if ext == ".zip" or "zip" in content_type:
             if ctx:
-                await ctx.log_info("Extracting zip archive...")
+                await ctx.info("Extracting zip archive...")
             with zipfile.ZipFile(tmp_path, "r") as zf:
                 zf.extractall(tmpdir)
             preset_files = [
@@ -146,7 +146,7 @@ async def install_preset(
             installed.append(str(dest))
 
             if ctx:
-                await ctx.log_info(f"Installed: {dest}")
+                await ctx.info(f"Installed: {dest}")
 
     # Register in cache
     presets_cache = _load_presets_cache()
@@ -223,7 +223,7 @@ async def load_preset_in_fl(
     fl_win = fl_windows[0]
 
     if ctx:
-        await ctx.log_info(f"FL Studio window: '{fl_win.title}' at ({fl_win.left},{fl_win.top})")
+        await ctx.info(f"FL Studio window: '{fl_win.title}' at ({fl_win.left},{fl_win.top})")
 
     # Refuse to proceed if FL is maximized — drag target coords will be wrong
     import ctypes
@@ -242,7 +242,7 @@ async def load_preset_in_fl(
 
     # ── 2. Open Windows Explorer with the preset file selected ───────────────
     if ctx:
-        await ctx.log_info(f"Opening Explorer at: {preset.parent}")
+        await ctx.info(f"Opening Explorer at: {preset.parent}")
 
     subprocess.Popen(["explorer", f"/select,{preset}"])
     time.sleep(2.0)  # Give Explorer time to open and render
@@ -257,7 +257,7 @@ async def load_preset_in_fl(
     if not explorer_windows:
         # Explorer opened but we couldn't find the window — fall back gracefully
         if ctx:
-            await ctx.log_error("Explorer window not found after opening.")
+            await ctx.error("Explorer window not found after opening.")
         return {
             "success": False,
             "error": (
@@ -284,7 +284,7 @@ async def load_preset_in_fl(
     rack_x, rack_y = _get_fl_channel_rack_position(fl_win, channel_index)
 
     if ctx:
-        await ctx.log_info(
+        await ctx.info(
             f"Drag: Explorer ({file_x},{file_y}) → FL channel rack ({rack_x},{rack_y})"
         )
 
@@ -312,7 +312,7 @@ async def load_preset_in_fl(
         time.sleep(0.3)
 
         if ctx:
-            await ctx.log_info("Drag completed.")
+            await ctx.info("Drag completed.")
 
         return {
             "success": True,
@@ -337,7 +337,7 @@ async def load_preset_in_fl(
         }
     except Exception as exc:
         if ctx:
-            await ctx.log_error(f"Drag failed: {exc}")
+            await ctx.error(f"Drag failed: {exc}")
         return {
             "error": f"Drag failed: {exc}",
             "fallback": (

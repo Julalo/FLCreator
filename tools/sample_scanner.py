@@ -61,7 +61,7 @@ async def scan_samples(
         return {"scanned": 0, "message": "No audio files found in that folder."}
 
     if ctx:
-        await ctx.log_info(f"Found {total} audio files in {folder_path}")
+        await ctx.info(f"Found {total} audio files in {folder_path}")
 
     new_count = 0
     for i, audio_file in enumerate(audio_files):
@@ -115,7 +115,7 @@ async def scan_samples(
 
         except Exception as exc:
             if ctx:
-                await ctx.log_error(f"Error processing {audio_file.name}: {exc}")
+                await ctx.error(f"Error processing {audio_file.name}: {exc}")
 
         if ctx and i % 25 == 0:
             await ctx.report_progress(i + 1, total)
@@ -124,7 +124,7 @@ async def scan_samples(
 
     if ctx:
         await ctx.report_progress(total, total)
-        await ctx.log_info(
+        await ctx.info(
             f"Scan complete. {new_count} new files classified, {total - new_count} from cache."
         )
 
@@ -169,7 +169,7 @@ async def get_samples(
     results.sort(key=lambda s: s.get(sort_by) or 0, reverse=True)
 
     if ctx:
-        await ctx.log_info(f"Returning {len(results)} samples (type={type}, min_confidence={min_confidence})")
+        await ctx.info(f"Returning {len(results)} samples (type={type}, min_confidence={min_confidence})")
 
     return {
         "count": len(results),
