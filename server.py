@@ -25,6 +25,7 @@ from tools.preset_finder import find_presets as _find_presets
 from tools.preset_installer import install_preset as _install_preset, load_preset_in_fl as _load_preset_in_fl
 from tools.midi_sender import send_notes as _send_notes
 from tools.project_reader import read_project as _read_project
+from tools.sample_downloader import find_sample_packs as _find_sample_packs, download_sample_pack as _download_sample_pack
 
 
 # ── Lifespan ──────────────────────────────────────────────────────────────────
@@ -600,6 +601,97 @@ async def suggest_for_genre(input: SuggestForGenreInput, ctx: Context) -> dict:
     ])
 
     return result
+
+
+# ── Sample downloader tools ────────────────────────────────────────────────────
+
+class FindSamplePacksInput(BaseModel):
+    genre: str = Field(
+        ...,
+        description="Genre to search for (e.g. 'uk drill', 'trap', 'lo-fi', 'house', 'hip hop').",
+        min_length=1,
+    )
+    style: Optional[str] = Field(
+        None,
+        description="Optional sub-style filter (e.g. 'dark', 'melodic', 'hard').",
+    )
+
+
+class DownloadSamplePackInput(BaseModel):
+    url: str = Field(
+        ...,
+        description="Direct download URL for the sample pack (.zip) or individual audio file.",
+        min_length=10,
+    )
+    pack_name: str = Field(
+        ...,
+        description="Name for the folder where the pack will be saved.",
+        min_length=1,
+    )
+    destination_folder: Optional[str] = Field(
+        None,
+        description="Folder to save the pack into. Uses the first scan_folder from config if omitted.",
+    )
+    auto_scan: bool = Field(
+        True,
+        description="If True, automatically scan and classify the downloaded samples after extraction.",
+    )
+
+
+@mcp.tool(
+    annotations={
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": True,
+    }
+)
+async def find_sample_packs(input: FindSamplePacksInput, ctx: Context) -> dict:
+    """
+    Search for free sample packs online matching a genre or style.
+
+    Searches Looperman, SampleFocus, and a curated database of verified free packs.
+    Returns a list with names, sources, URLs, and tags.
+    Pass any result URL with direct=True to download_sample_pack to get it automatically.
+    For results with direct=False, visit the URL in your browser to find the download button.
+    """
+    try:
+        return await _find_sample_packs(
+            genre=input.genre,
+            style=input.style,
+            ctx=ctx,
+        )
+    except Exception as exc:
+        return _handle_error(exc, "find_sample_packs")
+
+
+@mcp.tool(
+    annotations={
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": True,
+    }
+)
+async def download_sample_pack(input: DownloadSamplePackInput, ctx: Context) -> dict:
+    """
+    Download a sample pack from a URL, extract it, and optionally scan the new samples.
+
+    Handles .zip archives and individual audio files (.wav, .mp3, .flac, .ogg).
+    Extracts all audio files into a sub-folder named after pack_name inside your samples folder.
+    If auto_scan=True (default), immediately classifies all downloaded samples so they appear
+    in get_samples queries.
+    """
+    try:
+        return await _download_sample_pack(
+            url=input.url,
+            pack_name=input.pack_name,
+            destination_folder=input.destination_folder,
+            auto_scan=input.auto_scan,
+            ctx=ctx,
+        )
+    except Exception as exc:
+        return _handle_error(exc, "download_sample_pack")
 
 
 # ── Entry point ────────────────────────────────────────────────────────────────
