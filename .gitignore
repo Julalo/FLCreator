@@ -1,0 +1,30 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ML model (user trains their own)
+classifier/drum_classifier.joblib
+
+# Config with real paths / credentials
+config.json
+
+# Cache (generated at runtime)
+cache/samples_library.json
+cache/plugins_library.json
+cache/presets_cache.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp

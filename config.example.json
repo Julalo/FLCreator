@@ -1,0 +1,24 @@
+{
+  "fl_studio": {
+    "user_data_folder": "C:\\Users\\{USER}\\Documents\\Image-Line\\FL Studio",
+    "install_folder": "C:\\Program Files\\Image-Line\\FL Studio 2024",
+    "vst_folders": [
+      "C:\\Program Files\\Common Files\\VST3",
+      "C:\\Program Files\\VSTPlugins",
+      "C:\\Program Files (x86)\\VSTPlugins"
+    ]
+  },
+  "samples": {
+    "scan_folders": [
+      "C:\\Users\\{USER}\\Music\\Samples",
+      "D:\\Sample Library"
+    ]
+  },
+  "midi": {
+    "port_name": "loopMIDI Port",
+    "default_velocity": 100,
+    "default_bpm": 140
+  },
+  "cache_folder": "./cache",
+  "auto_research_plugins": true
+}
