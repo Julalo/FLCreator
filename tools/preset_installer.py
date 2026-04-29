@@ -169,106 +169,180 @@ async def install_preset(
     }
 
 
+def _get_fl_channel_rack_position(fl_win, channel_index: Optional[int]) -> tuple[int, int]:
+    """
+    Estimate the screen coordinates of a channel rack slot.
+    FL Studio's channel rack starts roughly 150px from the top of the window
+    and 60px from the left. Each channel row is ~22px tall.
+    """
+    base_x = fl_win.left + 120
+    base_y = fl_win.top + 150
+    if channel_index is not None:
+        base_y += channel_index * 22
+    return base_x, base_y
+
+
 async def load_preset_in_fl(
     preset_path: str,
     channel_index: Optional[int] = None,
     ctx: Optional[Context] = None,
 ) -> dict:
-    """Load a .fst preset into FL Studio via pyautogui UI automation."""
+    """
+    Load a .fst preset into FL Studio by opening Windows Explorer at the preset
+    folder, then performing a real OS-level drag from Explorer to the FL Studio
+    channel rack using pyautogui.
+
+    Requires FL Studio to be running in windowed (non-maximized) mode.
+    """
+    import subprocess
+
     preset = Path(preset_path)
     if not preset.exists():
         return {"error": f"Preset file not found: {preset_path}"}
+    if preset.suffix.lower() != ".fst":
+        return {
+            "error": f"Only .fst files can be dragged into FL Studio. Got: {preset.suffix}",
+            "preset_path": preset_path,
+        }
 
     try:
         import pygetwindow as gw  # type: ignore
     except ImportError:
-        return {
-            "error": "pygetwindow is not installed. Run: pip install pygetwindow",
-            "preset_path": preset_path,
-        }
+        return {"error": "pygetwindow not installed. Run: pip install pygetwindow"}
 
     try:
         import pyautogui  # type: ignore
     except ImportError:
-        return {
-            "error": "pyautogui is not installed. Run: pip install pyautogui",
-            "preset_path": preset_path,
-        }
+        return {"error": "pyautogui not installed. Run: pip install pyautogui"}
 
-    # Find FL Studio window
+    # ── 1. Find FL Studio ────────────────────────────────────────────────────
     fl_windows = [w for w in gw.getAllWindows() if "FL Studio" in w.title]
     if not fl_windows:
-        return {
-            "error": "FL Studio is not open. Please launch FL Studio first.",
-        }
+        return {"error": "FL Studio is not open. Launch FL Studio first."}
 
     fl_win = fl_windows[0]
+
     if ctx:
-        await ctx.log_info(f"Found FL Studio window: '{fl_win.title}'")
+        await ctx.log_info(f"FL Studio window: '{fl_win.title}' at ({fl_win.left},{fl_win.top})")
 
+    # Refuse to proceed if FL is maximized — drag target coords will be wrong
+    import ctypes
     try:
-        fl_win.activate()
-        time.sleep(0.5)
-    except Exception as exc:
+        hwnd = fl_win._hWnd  # pygetwindow exposes the HWND on Windows
+        placement = ctypes.windll.user32.IsZoomed(hwnd)
+        if placement:
+            return {
+                "error": (
+                    "FL Studio is maximized. Restore it to a window (press Win+Down or drag "
+                    "the title bar) so the channel rack position can be calculated correctly."
+                )
+            }
+    except Exception:
+        pass  # If we can't check, proceed anyway
+
+    # ── 2. Open Windows Explorer with the preset file selected ───────────────
+    if ctx:
+        await ctx.log_info(f"Opening Explorer at: {preset.parent}")
+
+    subprocess.Popen(["explorer", f"/select,{preset}"])
+    time.sleep(2.0)  # Give Explorer time to open and render
+
+    # Find the Explorer window — its title is the parent folder name
+    explorer_title = preset.parent.name
+    explorer_windows = [
+        w for w in gw.getAllWindows()
+        if explorer_title.lower() in w.title.lower() or "File Explorer" in w.title
+    ]
+
+    if not explorer_windows:
+        # Explorer opened but we couldn't find the window — fall back gracefully
         if ctx:
-            await ctx.log_error(f"Could not activate FL Studio window: {exc}")
+            await ctx.log_error("Explorer window not found after opening.")
+        return {
+            "success": False,
+            "error": (
+                "Could not locate the Explorer window automatically. "
+                f"Open this folder manually and drag the file to FL Studio:\n{preset}"
+            ),
+        }
+
+    exp_win = explorer_windows[0]
 
     try:
-        # Open FL Studio browser with F8
-        pyautogui.hotkey("f8")
-        time.sleep(0.8)
+        exp_win.activate()
+        time.sleep(0.4)
+    except Exception:
+        pass
 
-        # Get FL window position and size for drag target
-        fl_left = fl_win.left
-        fl_top = fl_win.top
-        fl_width = fl_win.width
-        fl_height = fl_win.height
+    # ── 3. Calculate positions ───────────────────────────────────────────────
+    # The selected file sits roughly in the center of the Explorer content area.
+    # Explorer's content pane starts ~40px below the toolbar and ~200px from the left
+    # (accounting for the navigation pane).
+    file_x = exp_win.left + exp_win.width // 2
+    file_y = exp_win.top + int(exp_win.height * 0.45)
 
-        # Channel rack is typically in the lower-left region of FL
-        if channel_index is not None:
-            channel_y = fl_top + 150 + (channel_index * 20)
-            drop_x = fl_left + 250
-            drop_y = min(channel_y, fl_top + fl_height - 50)
-        else:
-            drop_x = fl_left + 250
-            drop_y = fl_top + 200
+    rack_x, rack_y = _get_fl_channel_rack_position(fl_win, channel_index)
 
-        # Drag the preset file to FL Studio
-        # This works best when FL browser is open and the preset is visible
-        pyautogui.moveTo(drop_x, drop_y, duration=0.3)
+    if ctx:
+        await ctx.log_info(
+            f"Drag: Explorer ({file_x},{file_y}) → FL channel rack ({rack_x},{rack_y})"
+        )
+
+    # ── 4. Perform the drag ──────────────────────────────────────────────────
+    try:
+        pyautogui.FAILSAFE = True  # Move mouse to top-left corner to abort
+        pyautogui.PAUSE = 0.05
+
+        # Click the file to make sure it's selected
+        pyautogui.moveTo(file_x, file_y, duration=0.3)
+        time.sleep(0.15)
+        pyautogui.click()
         time.sleep(0.2)
 
+        # Drag to FL Studio channel rack
+        pyautogui.mouseDown(button="left")
+        time.sleep(0.15)
+
+        # Move in small steps for reliability (some apps need slow drags)
+        pyautogui.moveTo(file_x, file_y - 10, duration=0.1)   # lift slightly
+        pyautogui.moveTo(rack_x, rack_y, duration=0.9)         # drag across
+        time.sleep(0.2)
+
+        pyautogui.mouseUp(button="left")
+        time.sleep(0.3)
+
         if ctx:
-            await ctx.log_info(
-                f"UI automation: attempted to open browser (F8) and position cursor at "
-                f"({drop_x}, {drop_y}). Manual drag may be required."
-            )
+            await ctx.log_info("Drag completed.")
 
         return {
             "success": True,
-            "message": (
-                "FL Studio browser opened (F8). "
-                "The preset was not auto-dragged — navigate to the preset in the FL browser "
-                f"({preset.parent}) and drag '{preset.name}' to the channel rack manually, "
-                "or double-click it to load it."
-            ),
             "preset_path": preset_path,
             "fl_window": fl_win.title,
-            "note": (
-                "Full drag-and-drop automation requires FL Studio to be in windowed mode "
-                "and the browser to show the preset folder. "
-                "Alternatively, use the FL browser (F8) to navigate to the preset folder."
+            "channel_index": channel_index,
+            "message": (
+                f"Dragged '{preset.name}' from Explorer to the FL Studio channel rack. "
+                "If the preset did not load, make sure FL Studio is in windowed mode "
+                "and not maximized, then try again."
+            ),
+            "tip": (
+                "If the drag landed in the wrong channel, call load_preset_in_fl again "
+                "with channel_index set to the exact channel number (0 = first channel)."
             ),
         }
 
+    except pyautogui.FailSafeException:
+        return {
+            "error": "Drag aborted — mouse moved to top-left corner (pyautogui failsafe).",
+            "preset_path": preset_path,
+        }
     except Exception as exc:
         if ctx:
-            await ctx.log_error(f"UI automation failed: {exc}")
+            await ctx.log_error(f"Drag failed: {exc}")
         return {
-            "error": f"pyautogui automation failed: {exc}",
+            "error": f"Drag failed: {exc}",
             "fallback": (
-                f"Open FL Studio browser (F8), navigate to {preset.parent}, "
-                f"and drag '{preset.name}' to the channel rack."
+                f"Explorer is open at the preset folder. "
+                f"Drag '{preset.name}' to the FL Studio channel rack manually."
             ),
             "preset_path": preset_path,
         }

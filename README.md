@@ -6,6 +6,30 @@ An MCP (Model Context Protocol) server that gives Claude full knowledge of your 
 
 ---
 
+## Before you start — important notices
+
+> **These apply to both Windows and Mac users. Read before installing.**
+
+**FL Studio version compatibility**
+This server works with any version of FL Studio for the main features (sample scanning, plugin reading, preset install, MIDI). The `.flp` project file parser (`read_project` tool) is only reliable on FL Studio 20 and 21 — older or newer versions may not parse correctly or may error out. If you are on an older version and `read_project` fails, the rest of the server still works fine.
+
+**Windowed mode required for preset drag**
+The automatic preset drag (`load_preset_in_fl`) opens Windows Explorer at the preset folder and drags the file into FL Studio's channel rack. For this to work, FL Studio must be in windowed mode (not maximized, not fullscreen). If FL is maximized, the tool will tell you and refuse to proceed rather than dropping the file in the wrong place.
+
+**The drag targets the first visible channel by default**
+When you call `load_preset_in_fl` without specifying `channel_index`, the preset drops onto the first channel in the rack. If you want it on a specific channel, pass the index (0 = first, 1 = second, etc.). This is because FL Studio does not expose its UI state to external programs.
+
+**MIDI requires setup before it works**
+`send_notes` does nothing until you configure a virtual MIDI port AND tell FL Studio to listen to it. On Windows this means installing LoopMIDI. On Mac the IAC Driver is built-in but must be activated manually. Both steps are covered in the install guide below. If you skip this, the tool will return a clear error explaining exactly what to do.
+
+**Linux is not supported**
+FL Studio does not run natively on Linux. The sample scanner and preset finder tools work on Linux, but anything that interacts with FL Studio directly (drag, MIDI, plugin reading) does not.
+
+**No API keys needed**
+This server makes no calls to Anthropic's API and requires no paid accounts. The only network access is the preset search (httpx requests to public websites) and the plugin researcher, which queries Wikipedia as a fallback.
+
+---
+
 ## What it does
 
 - Scans and classifies your entire sample library (kick, snare, 808, hi-hat, loop, vocal, etc.) using a three-tier ML classifier
@@ -382,6 +406,30 @@ MIT — free to use, modify, and distribute.
 # Español
 
 Una guía de instalación completa en español para **FL Studio Producer Brain**.
+
+---
+
+## Antes de empezar — avisos importantes
+
+> **Aplican tanto a Windows como a Mac. Léelos antes de instalar.**
+
+**Compatibilidad con versiones de FL Studio**
+El servidor funciona con cualquier versión de FL Studio para las funciones principales (escaneo de samples, lectura de plugins, instalación de presets, MIDI). El lector de proyectos `.flp` (`read_project`) solo es fiable en FL Studio 20 y 21 — versiones más antiguas o más nuevas pueden no parsear correctamente. Si usas una versión antigua y `read_project` falla, el resto del servidor sigue funcionando sin problema.
+
+**FL Studio debe estar en modo ventana para el drag de presets**
+La herramienta `load_preset_in_fl` abre el Explorador de Windows en la carpeta del preset y arrastra el archivo al channel rack de FL Studio. Para que funcione, FL Studio debe estar en modo ventana (no maximizado, no pantalla completa). Si FL está maximizado, la herramienta te avisará y no intentará el drag para evitar soltar el archivo en el lugar equivocado.
+
+**El drag cae en el primer canal por defecto**
+Si llamas a `load_preset_in_fl` sin especificar `channel_index`, el preset cae en el primer canal del rack. Si quieres un canal concreto, pasa el índice (0 = primero, 1 = segundo, etc.). Esto es así porque FL Studio no expone el estado de su interfaz a programas externos.
+
+**El MIDI necesita configuración previa**
+`send_notes` no hace nada hasta que configures un puerto MIDI virtual Y le digas a FL Studio que lo escuche. En Windows esto significa instalar LoopMIDI. En Mac el IAC Driver ya viene instalado pero hay que activarlo. Los dos pasos están explicados en la guía de instalación de abajo. Si te los saltas, la herramienta devuelve un error claro indicando exactamente qué hacer.
+
+**Linux no está soportado**
+FL Studio no corre de forma nativa en Linux. El escáner de samples y el buscador de presets funcionan en Linux, pero todo lo que interactúa directamente con FL Studio (drag, MIDI, lectura de plugins) no.
+
+**No hacen falta API keys**
+Este servidor no llama a la API de Anthropic y no requiere cuentas de pago. El único acceso a internet es la búsqueda de presets (peticiones HTTP a webs públicas) y el investigador de plugins, que usa Wikipedia como fallback.
 
 ---
 
