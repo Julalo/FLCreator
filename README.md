@@ -181,6 +181,25 @@ Open `config.json` and adjust these fields if needed:
 
 The installer fills your username automatically. The only thing you may need to change is `scan_folders` if your samples are on a different drive (e.g. `D:\\Samples`).
 
+### Step 7 — Freesound API key (optional, for automatic sample downloads)
+
+This unlocks the `search_freesound` and `download_freesound_samples` tools, which let Claude search and download samples directly without needing a browser.
+
+1. Go to [freesound.org/apiv2/apply](https://freesound.org/apiv2/apply/) — free account, instant approval.
+2. Copy your API key.
+3. Open `config.json` and add this line before the last `}`:
+   ```json
+   "freesound_api_key": "paste_your_key_here"
+   ```
+
+> **Important:** `config.json` is never uploaded to GitHub (it's in `.gitignore`). Each user manages their own key locally. Do not copy the key into `config.example.json`.
+
+Once added, you can say things like:
+- *"Search 10 reggaeton samples on Freesound"*
+- *"Download those samples into my Samples folder"*
+
+Claude will search, download, and classify them automatically.
+
 ---
 
 ## Mac Installation
@@ -560,6 +579,25 @@ Abre `config.json`. El instalador ya rellenó tu nombre de usuario. Solo necesit
   }
 }
 ```
+
+### Paso 7 — API key de Freesound (opcional, para descargar samples automáticamente)
+
+Esto activa las herramientas `search_freesound` y `download_freesound_samples`, que permiten a Claude buscar y descargar samples directamente sin abrir el navegador.
+
+1. Ve a [freesound.org/apiv2/apply](https://freesound.org/apiv2/apply/) — cuenta gratuita, aprobación instantánea.
+2. Copia tu API key.
+3. Abre `config.json` y añade esta línea antes del último `}`:
+   ```json
+   "freesound_api_key": "pega_tu_key_aqui"
+   ```
+
+> **Importante:** `config.json` nunca se sube a GitHub (está en `.gitignore`). Cada usuario gestiona su propia key en local. No copies la key en `config.example.json`.
+
+Una vez configurado puedes decirle cosas como:
+- *"Búscame 10 samples de reggaeton en Freesound"*
+- *"Descarga esos samples en mi carpeta de Samples"*
+
+Claude buscará, descargará y clasificará los samples automáticamente.
 
 ---
 
