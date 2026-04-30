@@ -127,9 +127,10 @@ async def send_notes(
                         if start_sec > now:
                             time.sleep(start_sec - now)
 
-                        port.send(mido.Message("note_on", note=note_num, velocity=velocity))
+                        channel = max(0, min(15, int(note_data.get("channel", 0))))
+                        port.send(mido.Message("note_on", channel=channel, note=note_num, velocity=velocity))
                         time.sleep(duration_sec)
-                        port.send(mido.Message("note_off", note=note_num, velocity=0))
+                        port.send(mido.Message("note_off", channel=channel, note=note_num, velocity=0))
                         sent += 1
 
                     except Exception as exc:

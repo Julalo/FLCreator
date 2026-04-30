@@ -102,6 +102,35 @@ Run them in sequence:
 | DnB | 165-175 | Breakbeats, reese bass, amen chops | Serum, Massive |
 | Ambient | 60-80 | Long pads, textural FX, slow attack | Omnisphere, Vital |
 
+### generate_beat
+This is the main music creation tool. Use it when the user says anything like "create a beat", "make music", "generate a trap beat", etc.
+
+**Workflow:**
+```
+generate_beat(genre="trap", key="F#", bpm=140, bars=4, include=["all"])
+→ Returns midi_file path (e.g. C:\Users\...\beats\trap_F#pentatonic_minor_140bpm.mid)
+→ User imports in FL Studio: File → Import → MIDI file
+→ Assign instruments per channel:
+    - Channel 10 (drums): FPC or any drum sampler
+    - Channel 2 (bass): 3xOsc / Serum for 808 bass
+    - Channel 3 (melody): Serum / Vital / any synth
+    - Channel 4 (chords): Pad synth or Serum
+```
+
+**Key decisions:**
+- Pick a key that fits the mood: F# minor (dark trap), C minor (drill), A minor (versatile)
+- If bpm omitted, the tool picks a genre-appropriate BPM automatically
+- `bars=4` is a standard loop; use `bars=8` for a longer phrase
+- You can generate only specific tracks: `include=["drums", "bass"]`
+- Supported genres: trap, uk drill, drill, house, lo-fi, hip hop, boom bap, edm, reggaeton, afrobeat, dancehall
+- Supported scales: minor, major, pentatonic_minor, pentatonic_major, dorian, phrygian, blues
+
+**After generating**, tell the user:
+1. The exact path of the .mid file
+2. Which key and chord progression was used
+3. How to assign instruments in FL Studio per channel
+4. That they can call generate_beat again with different params to iterate
+
 ## What this server cannot do
 
 - It cannot hear audio or listen to a project playing back.

@@ -350,18 +350,50 @@ or
 
 ## Available tools (quick reference)
 
+### Sample library
+
 | Tool | What it does |
 |------|-------------|
-| `scan_samples` | Scan a folder and classify all audio files by type |
-| `get_samples` | Query your classified sample library with filters |
-| `read_plugins` | List all installed VST plugins |
-| `research_plugin` | Get genre/synthesis info about a specific plugin |
-| `find_presets` | Search online for free presets matching plugin + genre |
-| `install_preset` | Download and install a preset to the right folder |
-| `load_preset_in_fl` | Load a preset into FL Studio via UI automation |
-| `send_notes` | Send a MIDI pattern to FL Studio via virtual port |
-| `read_project` | Parse a `.flp` project file and extract its contents |
-| `suggest_for_genre` | Full recommendation: samples + plugins + presets for a genre |
+| `scan_samples` | Scan a folder recursively and classify every audio file (kick, snare, 808, hi-hat, loop, vocal, etc.) using a 3-tier ML classifier. Results cached for instant future queries. |
+| `get_samples` | Query the classified library with filters: type, minimum confidence, sort order. Returns paths, BPM, brightness, and confidence score. |
+
+### Plugins
+
+| Tool | What it does |
+|------|-------------|
+| `read_plugins` | List all installed VST/VST3 plugins from FL Studio's database and system plugin folders. Cached in `plugins_library.json`. |
+| `research_plugin` | Get synthesis type, recommended genres, sound categories, and links for a specific plugin. Built-in data for Serum, Massive, Vital, Sylenth1, Kontakt, Omnisphere, Nexus, 3xOsc, Harmor. Wikipedia fallback for others. |
+
+### Presets
+
+| Tool | What it does |
+|------|-------------|
+| `find_presets` | Search PresetShare, ADSR Sounds, and Splice free tier for presets matching a plugin and genre. |
+| `install_preset` | Download a preset from a URL and install it to the correct FL Studio folder. Handles `.fst`, `.fxp`, `.fxb`, and `.zip` archives. |
+| `load_preset_in_fl` | Load a `.fst` preset into an open FL Studio session using UI automation (pyautogui). FL Studio must be running and in windowed mode. |
+
+### MIDI and music creation
+
+| Tool | What it does |
+|------|-------------|
+| `generate_beat` | **Compose a full beat from scratch.** Given a genre, key, and BPM, generates drum pattern, 808/bass line, melody, and chord pad using real music theory. Exports a multi-track `.mid` file ready to import into FL Studio. Supports: trap, uk drill, drill, house, lo-fi, hip hop, boom bap, edm, reggaeton, afrobeat, dancehall. |
+| `send_notes` | Send a MIDI note list to FL Studio in real time via a LoopMIDI virtual port. Each note can specify pitch, velocity, duration (beats), start time (beats), and MIDI channel. |
+
+### Projects
+
+| Tool | What it does |
+|------|-------------|
+| `read_project` | Parse a `.flp` project file and extract BPM, title, author, genre, channel list (with plugin/sample names), patterns, and mixer layout. Requires pyflp; best on FL Studio 20/21. |
+| `suggest_for_genre` | High-level genre advisor. Combines sample library, plugin list, and online preset search to recommend everything you need for a given genre and element (drums, bass, melody, all). |
+
+### Sample downloads
+
+| Tool | What it does |
+|------|-------------|
+| `find_sample_packs` | Search for free sample packs online (Looperman, SampleFocus, curated database) filtered by genre and style. |
+| `download_sample_pack` | Download a sample pack ZIP from a URL, extract it, and optionally scan and classify the new samples automatically. |
+| `search_freesound` | Search Freesound.org by genre and sound type using their public API. Returns preview URLs and metadata. Requires a free API key in `config.json`. |
+| `download_freesound_samples` | Download Freesound preview files by URL into a named folder, then optionally auto-scan and classify them. |
 
 ---
 
@@ -730,13 +762,66 @@ FL Studio en Mac guarda los datos del usuario en:
 
 ---
 
+## Herramientas disponibles
+
+### Librería de samples
+
+| Herramienta | Qué hace |
+|-------------|----------|
+| `scan_samples` | Escanea una carpeta y clasifica cada archivo de audio (kick, snare, 808, hi-hat, loop, vocal...) con un clasificador ML de 3 capas. Los resultados se guardan en caché. |
+| `get_samples` | Consulta la librería clasificada con filtros: tipo, confianza mínima, orden. Devuelve rutas, BPM, brillo y puntuación de confianza. |
+
+### Plugins
+
+| Herramienta | Qué hace |
+|-------------|----------|
+| `read_plugins` | Lista todos los plugins VST/VST3 instalados desde la base de datos de FL Studio y las carpetas del sistema. |
+| `research_plugin` | Tipo de síntesis, géneros recomendados y links para un plugin específico. Datos integrados para Serum, Massive, Vital, Sylenth1, Kontakt, Omnisphere, Nexus, 3xOsc, Harmor. |
+
+### Presets
+
+| Herramienta | Qué hace |
+|-------------|----------|
+| `find_presets` | Busca en PresetShare, ADSR Sounds y Splice presets gratuitos para un plugin y género. |
+| `install_preset` | Descarga un preset desde una URL y lo instala en la carpeta correcta de FL Studio. Soporta `.fst`, `.fxp`, `.fxb` y `.zip`. |
+| `load_preset_in_fl` | Carga un preset `.fst` en una sesión de FL Studio abierta mediante automatización de UI (pyautogui). FL Studio debe estar abierto en modo ventana. |
+
+### MIDI y creación musical
+
+| Herramienta | Qué hace |
+|-------------|----------|
+| `generate_beat` | **Compone un beat completo desde cero.** Con un género, tonalidad y BPM, genera patrón de batería, línea de 808/bajo, melodía y pad de acordes usando teoría musical real. Exporta un archivo `.mid` multi-track listo para importar en FL Studio. Géneros: trap, uk drill, drill, house, lo-fi, hip hop, boom bap, edm, reggaeton, afrobeat, dancehall. |
+| `send_notes` | Envía notas MIDI a FL Studio en tiempo real por un puerto virtual LoopMIDI. Cada nota puede tener pitch, velocidad, duración (pulsos), tiempo de inicio y canal MIDI. |
+
+### Proyectos
+
+| Herramienta | Qué hace |
+|-------------|----------|
+| `read_project` | Parsea un proyecto `.flp` y extrae BPM, título, canales (con plugins/samples), patrones y mixer. Requiere pyflp; funciona mejor con FL Studio 20/21. |
+| `suggest_for_genre` | Asesor de género completo. Combina librería de samples, plugins instalados y búsqueda online de presets para recomendar todo lo necesario para un género y elemento (drums, bass, melody, all). |
+
+### Descargas de samples
+
+| Herramienta | Qué hace |
+|-------------|----------|
+| `find_sample_packs` | Busca sample packs gratuitos online (Looperman, SampleFocus, base de datos curada) por género y estilo. |
+| `download_sample_pack` | Descarga un ZIP de sample pack, lo extrae y opcionalmente escanea y clasifica los samples nuevos. |
+| `search_freesound` | Busca en Freesound.org por género y tipo de sonido usando su API pública. Devuelve URLs de preview y metadatos. Requiere API key gratuita en `config.json`. |
+| `download_freesound_samples` | Descarga previews de Freesound por URL a una carpeta nombrada y opcionalmente los clasifica. |
+
+---
+
 ## Verificación
 
 Una vez conectado, abre una conversación en Claude y escribe:
 
 > "What FL Studio tools do you have available?"
 
-Claude debe listar las 10 herramientas disponibles. Luego prueba:
+Claude debe listar las 15 herramientas disponibles. Luego prueba:
+
+> "Crea un beat de trap en F# a 140 BPM"
+
+o
 
 > "Escanea mis samples de [ruta a tu carpeta]"
 

@@ -27,6 +27,7 @@ from tools.midi_sender import send_notes as _send_notes
 from tools.project_reader import read_project as _read_project
 from tools.sample_downloader import find_sample_packs as _find_sample_packs, download_sample_pack as _download_sample_pack
 from tools.freesound_downloader import search_freesound as _search_freesound, download_freesound_samples as _download_freesound_samples
+from tools.beat_generator import generate_beat as _generate_beat
 
 
 # ── Lifespan ──────────────────────────────────────────────────────────────────
@@ -795,6 +796,96 @@ async def download_freesound_samples(input: DownloadFreesoundInput, ctx: Context
         )
     except Exception as exc:
         return _handle_error(exc, "download_freesound_samples")
+
+
+# ── Beat generator ────────────────────────────────────────────────────────────
+
+class GenerateBeatInput(BaseModel):
+    genre: str = Field(
+        ...,
+        description=(
+            "Target genre: trap, uk drill, drill, house, lo-fi, hip hop, "
+            "boom bap, edm, reggaeton, afrobeat, dancehall."
+        ),
+        min_length=1,
+    )
+    key: str = Field(
+        "C",
+        description="Root key: C, C#, D, D#, E, F, F#, G, G#, A, A#, B (or flats: Db, Eb, Gb, Ab, Bb).",
+    )
+    bpm: Optional[float] = Field(
+        None,
+        gt=40,
+        lt=300,
+        description="Tempo in BPM. If omitted, uses the genre's typical BPM range.",
+    )
+    bars: int = Field(
+        4,
+        ge=1,
+        le=16,
+        description="Number of bars to generate (1-16). Default 4.",
+    )
+    scale: Optional[str] = Field(
+        None,
+        description=(
+            "Scale name: minor, major, pentatonic_minor, pentatonic_major, dorian, phrygian, blues. "
+            "If omitted, uses the genre default."
+        ),
+    )
+    include: List[str] = Field(
+        default_factory=lambda: ["all"],
+        description=(
+            "Tracks to include: 'all', 'drums', 'bass', 'melody', 'chords'. "
+            "Default is ['all']."
+        ),
+    )
+    output_path: Optional[str] = Field(
+        None,
+        description=(
+            "Absolute path to save the .mid file. "
+            "If omitted, saved to the beats/ folder inside the project cache dir."
+        ),
+    )
+
+
+@mcp.tool(
+    annotations={
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": False,
+    }
+)
+async def generate_beat(input: GenerateBeatInput, ctx: Context) -> dict:
+    """
+    Generate a complete beat using music theory and export it as a MIDI file.
+
+    Creates drums, 808/bass, melody, and chord pad tracks tuned to the genre,
+    key, and BPM you specify. Saves a multi-track .mid file ready to import
+    into FL Studio (File → Import → MIDI file).
+
+    Supported genres: trap, uk drill, drill, house, lo-fi, hip hop, boom bap,
+    edm, reggaeton, afrobeat, dancehall.
+
+    Each track is on its own MIDI channel:
+    - Channel 10: drums (GM standard)
+    - Channel 2: bass / 808
+    - Channel 3: melody
+    - Channel 4: chord pad
+    """
+    try:
+        return await _generate_beat(
+            genre=input.genre,
+            key=input.key,
+            bpm=input.bpm,
+            bars=input.bars,
+            scale_name=input.scale,
+            include=input.include,
+            output_path=input.output_path,
+            ctx=ctx,
+        )
+    except Exception as exc:
+        return _handle_error(exc, "generate_beat")
 
 
 # ── Entry point ────────────────────────────────────────────────────────────────
