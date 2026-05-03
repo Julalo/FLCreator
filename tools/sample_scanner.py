@@ -15,6 +15,7 @@ from fastmcp import Context
 
 from config import cache_folder
 from classifier import predict_sample_type
+from classifier.predict import predict_sample_type_with_meta
 from models import Sample, SampleType
 
 AUDIO_EXTS = {".wav", ".mp3", ".ogg", ".flac", ".aiff", ".aif"}
@@ -50,21 +51,6 @@ def _save_cache(data: dict[str, dict]) -> None:
 _SEMAPHORE = asyncio.Semaphore(6)
 
 
-def _analyze_file(key: str) -> tuple[float, float, float]:
-    """Returns (duration, brightness, rms). Loads only 3s of audio."""
-    try:
-        import librosa  # type: ignore
-        y, sr = librosa.load(key, sr=22050, mono=True, duration=3.0)
-        if len(y) == 0:
-            return 0.0, 0.0, 0.0
-        duration = librosa.get_duration(y=y, sr=sr)
-        brightness = float(librosa.feature.spectral_centroid(y=y, sr=sr).mean())
-        rms_val = float(librosa.feature.rms(y=y).mean())
-        return duration, brightness, rms_val
-    except Exception:
-        return 0.0, 0.0, 0.0
-
-
 async def _process_one(audio_file: Path, cache: dict) -> bool:
     """Process a single file. Returns True if newly added."""
     key = str(audio_file)
@@ -73,8 +59,9 @@ async def _process_one(audio_file: Path, cache: dict) -> bool:
 
     async with _SEMAPHORE:
         try:
-            label, confidence = await asyncio.to_thread(predict_sample_type, key)
-            duration, brightness, rms_val = await asyncio.to_thread(_analyze_file, key)
+            label, confidence, duration, brightness, rms_val = await asyncio.to_thread(
+                predict_sample_type_with_meta, key
+            )
 
             cache[key] = {
                 "path": key,

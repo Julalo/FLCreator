@@ -10,7 +10,7 @@ Feature vector layout (37 values total):
   [29]     Zero crossing rate mean
   [30]     RMS mean
   [31]     RMS max
-  [32]     Estimated tempo
+  [32]     Estimated tempo (always 0.0 — beat_track removed for speed)
   [33]     Duration in seconds
   [34]     Low-energy ratio  (fraction of frames below 10% of max RMS — helps ID hihats)
   [35]     High-frequency ratio  (fraction of spectral energy above 4kHz)
@@ -26,18 +26,29 @@ FEATURE_SIZE = 37
 
 def extract_features(file_path: str, sr: int = 22050) -> np.ndarray:
     """Return a 1-D numpy array of length FEATURE_SIZE, or zeros on error."""
+    vec, _ = extract_features_with_audio(file_path, sr=sr)
+    return vec
+
+
+def extract_features_with_audio(
+    file_path: str, sr: int = 22050
+) -> tuple[np.ndarray, tuple]:
+    """Return (feature_vec, (duration, brightness, rms_mean)) using a single librosa load."""
+    _empty = np.zeros(FEATURE_SIZE, dtype=np.float32)
+    _empty_extra = (0.0, 0.0, 0.0)
+
     try:
         import librosa  # type: ignore
     except ImportError:
-        return np.zeros(FEATURE_SIZE, dtype=np.float32)
+        return _empty, _empty_extra
 
     try:
-        y, sr = librosa.load(file_path, sr=sr, mono=True, duration=10.0)
+        y, sr = librosa.load(file_path, sr=sr, mono=True, duration=3.0)
     except Exception:
-        return np.zeros(FEATURE_SIZE, dtype=np.float32)
+        return _empty, _empty_extra
 
     if len(y) == 0:
-        return np.zeros(FEATURE_SIZE, dtype=np.float32)
+        return _empty, _empty_extra
 
     # MFCCs
     mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
@@ -52,12 +63,8 @@ def extract_features(file_path: str, sr: int = 22050) -> np.ndarray:
 
     # Energy
     rms = librosa.feature.rms(y=y)[0]
-    rms_mean = rms.mean()
+    rms_mean = float(rms.mean())
     rms_max = rms.max()
-
-    # Rhythm
-    tempo, _ = librosa.beat.beat_track(y=y, sr=sr)
-    tempo_val = float(tempo) if np.isscalar(tempo) else float(tempo[0]) if len(tempo) > 0 else 0.0
 
     # Duration
     duration = librosa.get_duration(y=y, sr=sr)
@@ -79,9 +86,9 @@ def extract_features(file_path: str, sr: int = 22050) -> np.ndarray:
     vec = np.concatenate([
         mfcc_mean,
         mfcc_std,
-        [centroid, bandwidth, rolloff, zcr,
-         rms_mean, rms_max, tempo_val, duration,
-         low_energy_ratio, hf_ratio, onset_strength],
+        [float(centroid), float(bandwidth), float(rolloff), float(zcr),
+         rms_mean, float(rms_max), 0.0, duration,
+         low_energy_ratio, hf_ratio, float(onset_strength)],
     ]).astype(np.float32)
 
-    return vec
+    return vec, (duration, float(centroid), rms_mean)

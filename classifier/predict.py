@@ -13,7 +13,7 @@ from pathlib import Path
 
 import numpy as np
 
-from .features import extract_features
+from .features import extract_features, extract_features_with_audio
 
 MODEL_PATH = Path(__file__).parent / "drum_classifier.joblib"
 
@@ -120,16 +120,28 @@ def _classify_by_spectrum(features: np.ndarray) -> str:
 
 
 def predict_sample_type(file_path: str) -> tuple[str, float]:
-    """
-    Returns (label, confidence).
+    """Returns (label, confidence)."""
+    features = extract_features(file_path)
+    return _predict_from_features(file_path, features)
 
+
+def predict_sample_type_with_meta(
+    file_path: str,
+) -> tuple[str, float, float, float, float]:
+    """Returns (label, confidence, duration, brightness, rms) in one librosa load."""
+    features, (duration, brightness, rms_mean) = extract_features_with_audio(file_path)
+    label, confidence = _predict_from_features(file_path, features)
+    return label, confidence, duration, brightness, rms_mean
+
+
+def _predict_from_features(file_path: str, features: np.ndarray) -> tuple[str, float]:
+    """
     Confidence scale:
       0.9+ → ML model high confidence
       0.85  → filename heuristic match
       0.6   → ML model medium confidence
       0.5   → spectral heuristic
     """
-    features = extract_features(file_path)
 
     # Tier 1: ML model
     model = _load_model()
