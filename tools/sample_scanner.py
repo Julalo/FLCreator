@@ -40,6 +40,57 @@ def _save_cache(data: dict[str, dict]) -> None:
     )
 
 
+_SEMAPHORE = asyncio.Semaphore(6)
+
+
+def _analyze_file(key: str, label: str) -> tuple[float, float, float]:
+    """Returns (duration, brightness, rms). Skips beat_track entirely."""
+    try:
+        import librosa  # type: ignore
+        y, sr = librosa.load(key, sr=22050, mono=True, duration=3.0)
+        if len(y) == 0:
+            return 0.0, 0.0, 0.0
+        duration = librosa.get_duration(y=y, sr=sr)
+        brightness = float(librosa.feature.spectral_centroid(y=y, sr=sr).mean())
+        rms_val = float(librosa.feature.rms(y=y).mean())
+        return duration, brightness, rms_val
+    except Exception:
+        return 0.0, 0.0, 0.0
+
+
+async def _process_file(audio_file: Path, cache: dict, progress: list, total: int, ctx) -> None:
+    key = str(audio_file)
+    if key in cache:
+        progress[0] += 1
+        if ctx and progress[0] % 50 == 0:
+            await ctx.report_progress(progress[0], total)
+        return
+
+    async with _SEMAPHORE:
+        try:
+            label, confidence = await asyncio.to_thread(predict_sample_type, key)
+            duration, brightness, rms_val = await asyncio.to_thread(_analyze_file, key, label)
+
+            cache[key] = {
+                "path": key,
+                "filename": audio_file.name,
+                "type": label,
+                "confidence": round(confidence, 4),
+                "duration": round(duration, 3),
+                "bpm": None,
+                "brightness": round(brightness, 1),
+                "rms": round(rms_val, 6),
+                "extension": audio_file.suffix.lower(),
+            }
+        except Exception as exc:
+            if ctx:
+                await ctx.error(f"Error processing {audio_file.name}: {exc}")
+
+    progress[0] += 1
+    if ctx and progress[0] % 25 == 0:
+        await ctx.report_progress(progress[0], total)
+
+
 async def scan_samples(
     folder_path: str,
     force_rescan: bool = False,
@@ -50,6 +101,7 @@ async def scan_samples(
         return {"error": f"Folder not found: {folder_path}"}
 
     cache = _load_cache() if not force_rescan else {}
+    cached_before = len(cache)
 
     audio_files = [
         f for f in folder.rglob("*")
@@ -63,64 +115,12 @@ async def scan_samples(
     if ctx:
         await ctx.info(f"Found {total} audio files in {folder_path}")
 
-    new_count = 0
-    for i, audio_file in enumerate(audio_files):
-        key = str(audio_file)
-
-        if key in cache:
-            # Still report progress even for cached files
-            if ctx and i % 50 == 0:
-                await ctx.report_progress(i, total)
-            continue
-
-        try:
-            label, confidence = await asyncio.to_thread(
-                predict_sample_type, key
-            )
-
-            # Get duration via librosa if available
-            duration = 0.0
-            bpm = None
-            brightness = 0.0
-            rms_val = 0.0
-
-            try:
-                import librosa  # type: ignore
-                import numpy as np
-                y, sr = librosa.load(key, sr=22050, mono=True, duration=10.0)
-                if len(y) > 0:
-                    duration = librosa.get_duration(y=y, sr=sr)
-                    brightness = float(
-                        librosa.feature.spectral_centroid(y=y, sr=sr).mean()
-                    )
-                    rms_val = float(librosa.feature.rms(y=y).mean())
-                    if label == "loop":
-                        tempo, _ = librosa.beat.beat_track(y=y, sr=sr)
-                        bpm = float(tempo) if np.isscalar(tempo) else float(tempo[0]) if len(tempo) > 0 else None
-            except Exception:
-                pass
-
-            cache[key] = {
-                "path": key,
-                "filename": audio_file.name,
-                "type": label,
-                "confidence": round(confidence, 4),
-                "duration": round(duration, 3),
-                "bpm": round(bpm, 1) if bpm else None,
-                "brightness": round(brightness, 1),
-                "rms": round(rms_val, 6),
-                "extension": audio_file.suffix.lower(),
-            }
-            new_count += 1
-
-        except Exception as exc:
-            if ctx:
-                await ctx.error(f"Error processing {audio_file.name}: {exc}")
-
-        if ctx and i % 25 == 0:
-            await ctx.report_progress(i + 1, total)
+    progress = [0]
+    tasks = [_process_file(f, cache, progress, total, ctx) for f in audio_files]
+    await asyncio.gather(*tasks)
 
     _save_cache(cache)
+    new_count = len(cache) - cached_before
 
     if ctx:
         await ctx.report_progress(total, total)
