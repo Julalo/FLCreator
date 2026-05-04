@@ -28,6 +28,7 @@ from tools.project_reader import read_project as _read_project
 from tools.sample_downloader import find_sample_packs as _find_sample_packs, download_sample_pack as _download_sample_pack
 from tools.freesound_downloader import search_freesound as _search_freesound, download_freesound_samples as _download_freesound_samples
 from tools.beat_generator import generate_beat as _generate_beat
+from tools.flp_exporter import export_flp as _export_flp
 
 
 # ── Lifespan ──────────────────────────────────────────────────────────────────
@@ -886,6 +887,90 @@ async def generate_beat(input: GenerateBeatInput, ctx: Context) -> dict:
         )
     except Exception as exc:
         return _handle_error(exc, "generate_beat")
+
+
+# ── FLP exporter ─────────────────────────────────────────────────────────────
+
+class ExportFlpInput(BaseModel):
+    genre: str = Field(
+        ...,
+        description=(
+            "Target genre: trap, uk drill, drill, house, lo-fi, hip hop, "
+            "boom bap, edm, reggaeton, afrobeat, dancehall."
+        ),
+        min_length=1,
+    )
+    key: str = Field(
+        "C",
+        description="Root key: C, C#, D, D#, E, F, F#, G, G#, A, A#, B (or flats: Db, Eb, Gb, Ab, Bb).",
+    )
+    bpm: Optional[float] = Field(
+        None,
+        gt=40,
+        lt=300,
+        description="Tempo in BPM. If omitted, uses the genre's typical range.",
+    )
+    bars: int = Field(
+        4,
+        ge=1,
+        le=16,
+        description="Number of bars (1-16). Default 4.",
+    )
+    scale: Optional[str] = Field(
+        None,
+        description=(
+            "Scale: minor, major, pentatonic_minor, pentatonic_major, dorian, phrygian, blues. "
+            "If omitted, uses the genre default."
+        ),
+    )
+    output_path: Optional[str] = Field(
+        None,
+        description=(
+            "Absolute path to save the .flp file. "
+            "If omitted, saved to the beats/ folder inside the project cache dir."
+        ),
+    )
+
+
+@mcp.tool(
+    annotations={
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": False,
+    }
+)
+async def export_flp(input: ExportFlpInput, ctx: Context) -> dict:
+    """
+    Generate a complete FL Studio .flp project file with real drum samples.
+
+    Unlike generate_beat (which exports MIDI), this creates a full .flp that opens
+    directly in FL Studio with your real sample files already assigned to drum channels.
+
+    Each drum type (kick, snare, clap, hi-hat, crash) gets its own Sampler channel
+    pointing to a real file from your scanned sample library. Bass, melody, and chords
+    are added as pitched channels — assign your preferred synth to each in FL Studio.
+
+    Requirements:
+    - Run scan_samples first so the server knows your sample library.
+    - Save a blank FL Studio project as template.flp in the server root folder
+      (File → New in FL Studio → File → Save As → name it template.flp).
+    - pyflp installed: pip install pyflp
+
+    Returns the path to the generated .flp and a channel-by-channel layout.
+    """
+    try:
+        return await _export_flp(
+            genre=input.genre,
+            key=input.key,
+            bpm=input.bpm,
+            bars=input.bars,
+            scale_name=input.scale,
+            output_path=input.output_path,
+            ctx=ctx,
+        )
+    except Exception as exc:
+        return _handle_error(exc, "export_flp")
 
 
 # ── Entry point ────────────────────────────────────────────────────────────────

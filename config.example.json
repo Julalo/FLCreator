@@ -21,5 +21,6 @@
   },
   "cache_folder": "./cache",
   "auto_research_plugins": true,
-  "freesound_api_key": ""
+  "freesound_api_key": "",
+  "anthropic_api_key": ""
 }

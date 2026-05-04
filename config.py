@@ -76,6 +76,10 @@ def cache_folder() -> Path:
     return p
 
 
+def anthropic_api_key() -> str:
+    return get_config().get("anthropic_api_key", "")
+
+
 def auto_research_plugins() -> bool:
     return get_config().get("auto_research_plugins", True)
 

@@ -128,8 +128,23 @@ generate_beat(genre="trap", key="F#", bpm=140, bars=4, include=["all"])
 **After generating**, tell the user:
 1. The exact path of the .mid file
 2. Which key and chord progression was used
-3. How to assign instruments in FL Studio per channel
+3. The `instruments` field in the result tells you exactly what sounds and plugins to use for this genre — always relay this to the user
 4. That they can call generate_beat again with different params to iterate
+
+### export_flp
+Use this instead of generate_beat when the user wants a project that opens directly in FL Studio with real samples already loaded. Requires a template.flp in the server root and scan_samples to have been run. Returns a .flp file path.
+
+### Genre instrument knowledge
+Each genre has defined sounds in `GENRE_INSTRUMENTS` (tools/music_theory.py). When the user asks about a genre or generates a beat, use this knowledge to guide them:
+- **Reggaeton**: Piano + dembow rimshot. The step-10 snare hit is the dembow shot — it defines the genre.
+- **Trap**: The 808 IS the bass AND anchors the melody. Triplet hi-hats. Dark Serum/Vital lead.
+- **UK Drill**: Sliding 808, dark piano, NO claps. C minor or F# minor.
+- **Dancehall**: Kick ONLY on beat 3 (one-drop). Major key. Bright Nexus/Serum leads.
+- **Lo-fi**: Rhodes + vinyl crackle. SWING the hats. Imperfect is the goal.
+- **Afrobeat**: Polyrhythm. Pentatonic major. Percussion-heavy. Guitar riff.
+- **R&B**: Ghost notes on snare. Rhodes chords with seventh voicings. Melodic bass.
+- **Bachata**: Guitar IS the melody. Bongo pattern with built-in rest on beat 4.
+- **Amapiano**: Log drum tuned to the key. Grand piano. 112 BPM.
 
 ## What this server cannot do
 
