@@ -51,6 +51,11 @@ def _output_dir() -> Path:
 
 
 def _template_path() -> Path:
+    # 1. Explicit path in config.json takes priority
+    cfg_val = cfg.get_config().get("template_flp_path", "")
+    if cfg_val:
+        return Path(cfg_val)
+    # 2. template.flp next to server.py
     return Path(__file__).parent.parent / "template.flp"
 
 
@@ -186,12 +191,14 @@ async def export_flp(
     if not template.exists():
         return {
             "error": (
-                "template.flp not found. Create one in FL Studio:\n"
-                "  1. File → New\n"
-                "  2. File → Save As → choose the server root folder\n"
-                f"  3. Name it exactly: template.flp\n"
-                f"  Expected path: {template}\n"
-                "Then call export_flp again."
+                f"template.flp not found at: {template}\n\n"
+                "Option A — put the file at that exact path:\n"
+                "  1. Open FL Studio → File → New → File → Save As\n"
+                f"  2. Navigate to: {template.parent}\n"
+                "  3. Save as template.flp\n\n"
+                "Option B — specify a custom path in config.json:\n"
+                '  "template_flp_path": "C:\\\\Users\\\\Yulalo\\\\Desktop\\\\template.flp"\n'
+                "  (use double backslashes in JSON)"
             )
         }
 
