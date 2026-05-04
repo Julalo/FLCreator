@@ -27,6 +27,33 @@ SAVE_INTERVAL = 25
 # Stop processing and return partial result after this many seconds
 TIMEOUT_SECONDS = 50
 
+# Filename keyword → (type, confidence)
+_NAME_RULES: list[tuple[list[str], str, float]] = [
+    (["kick", "bd ", " bd_", "_bd_", "_bd.", "bass drum", "bassdrum", "808kick", "kick808"], "kick", 0.92),
+    (["snare", "snr", " sn_", "_sn_", "_sn."], "snare", 0.92),
+    (["clap", " clp", "_clp"], "clap", 0.92),
+    (["hihat_closed", "hihat closed", "hi-hat_closed", "closed hat", "closed_hat",
+      "cl_hat", "clhat", "chh", "_chh", "hi hat closed"], "hihat_closed", 0.92),
+    (["hihat_open", "hihat open", "hi-hat_open", "open hat", "open_hat",
+      "ohh", "_ohh", "hi hat open"], "hihat_open", 0.90),
+    (["hihat", "hi-hat", "hi_hat", "hat"], "hihat_closed", 0.80),
+    (["crash"], "crash", 0.90),
+    (["ride"], "ride", 0.90),
+    (["808", "eight08", "sub bass", "subbass", "sub_bass"], "808", 0.90),
+    (["tom", " tom"], "tom", 0.88),
+    (["perc", "percussion", "conga", "bongo", "shaker", "tamb"], "percussion", 0.85),
+    (["fx", " fx_", "_sfx", "riser", "down", "sweep", "impact", "whoosh", "zap"], "fx", 0.80),
+]
+
+
+def _classify_by_name(filename: str) -> tuple[str, float] | None:
+    """Return (type, confidence) if the filename clearly identifies the sample type."""
+    name = filename.lower()
+    for keywords, label, conf in _NAME_RULES:
+        if any(kw in name for kw in keywords):
+            return label, conf
+    return None
+
 
 def _cache_path() -> Path:
     return cache_folder() / CACHE_FILE
@@ -57,6 +84,24 @@ async def _process_one(audio_file: Path, cache: dict) -> bool:
     if key in cache:
         return False
 
+    # Fast path: classify by filename keyword (no audio loading needed)
+    name_result = _classify_by_name(audio_file.name)
+    if name_result is not None:
+        label, confidence = name_result
+        cache[key] = {
+            "path": key,
+            "filename": audio_file.name,
+            "type": label,
+            "confidence": confidence,
+            "duration": None,
+            "bpm": None,
+            "brightness": None,
+            "rms": None,
+            "extension": audio_file.suffix.lower(),
+        }
+        return True
+
+    # Slow path: load audio and run ML classifier
     async with _SEMAPHORE:
         try:
             label, confidence, duration, brightness, rms_val = await asyncio.to_thread(
