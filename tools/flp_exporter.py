@@ -50,16 +50,19 @@ def _beats_to_ticks(beats: float) -> int:
 
 # ── Sample lookup ─────────────────────────────────────────────────────────────
 
-def _best_sample(sample_type: str) -> str | None:
+def _best_sample(sample_type: str, min_confidence: float = 0.45) -> str | None:
     try:
         cache = cfg.cache_folder() / "samples_library.json"
         if not cache.exists():
             return None
         data = json.loads(cache.read_text(encoding="utf-8"))
+        # Cache is a flat dict keyed by path, not {"samples": [...]}
+        samples = list(data.values()) if isinstance(data, dict) else data
         results = [
-            s["path"] for s in data.get("samples", [])
-            if s.get("type", "").lower() == sample_type.lower()
-            and float(s.get("confidence", 0)) >= 0.65
+            s["path"] for s in samples
+            if isinstance(s, dict)
+            and s.get("type", "").lower() == sample_type.lower()
+            and float(s.get("confidence", 0)) >= min_confidence
             and Path(s["path"]).exists()
         ]
         return results[0] if results else None
