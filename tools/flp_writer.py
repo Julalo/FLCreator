@@ -32,18 +32,19 @@ _EV_TEMPO     = 0x9C  # DWORD — BPM * 1000
 _EV_PPQN      = 0xA4  # WORD  — PPQ (sometimes redundant with header)
 
 # Channel-level (one block per channel)
-_EV_CH_NEW    = 0x40  # WORD  — signals a new channel; value = channel index
-_EV_CH_TYPE   = 0x15  # BYTE  — 0=sampler, 1=unknown, 2=native FL instrument
-_EV_CH_ENABLED= 0x00  # BYTE  — 1=enabled
-_EV_CH_VOL    = 0x02  # BYTE  — volume 0-128 (default 100)
-_EV_CH_PAN    = 0x03  # BYTE  — pan 0-128 (default 64=center)
-_EV_CH_NAME   = 0xC4  # VAR   — channel name, UTF-16-LE null-terminated
-_EV_CH_SAMPLE = 0xC5  # VAR   — sample path, UTF-16-LE null-terminated
-_EV_CH_COLOR  = 0x83  # DWORD — channel color (RGBA)
+_EV_CH_NEW         = 0x40  # WORD  — new channel; value = channel index
+_EV_CH_TYPE        = 0x15  # BYTE  — 0=sampler, 2=native instrument
+_EV_CH_ENABLED     = 0x00  # BYTE  — 1=enabled
+_EV_CH_VOL         = 0x02  # BYTE  — volume 0-128
+_EV_CH_PAN         = 0x03  # BYTE  — pan 0-128 (64=center)
+_EV_CH_NAME        = 0xC4  # VAR   — channel name, UTF-16-LE
+_EV_CH_PLUGIN_NAME = 0xCB  # VAR   — plugin name, ASCII ("Sampler", "3xOsc", etc.)
+_EV_CH_SAMPLE      = 0xCA  # VAR   — sample file path, ASCII  ← confirmed from real .flp
+_EV_CH_COLOR       = 0x83  # DWORD — channel color
 
 # Pattern-level
 _EV_PAT_NEW   = 0xE1  # VAR   — new pattern marker
-_EV_PAT_NAME  = 0xC1  # VAR   — pattern name, UTF-16-LE null-terminated
+_EV_PAT_NAME  = 0xE7  # VAR   — pattern name  ← confirmed from real .flp
 _EV_PAT_NOTES = 0xE8  # VAR   — note data, 12 bytes per note
 _EV_PAT_COLOR = 0x96  # DWORD — pattern color
 
@@ -101,6 +102,9 @@ def _channel_events(index: int, name: str, sample_path: str | None, color: int =
     ev += _byte_ev(_EV_CH_PAN, 64)
     ev += _dword_ev(_EV_CH_COLOR, color)
     ev += _text_ev(_EV_CH_NAME, name)
+    # Plugin name tells FL Studio which instrument handles this channel
+    plugin = "Sampler" if sample_path else "3xOsc"
+    ev += _path_ev(_EV_CH_PLUGIN_NAME, plugin)
     if sample_path:
         ev += _path_ev(_EV_CH_SAMPLE, sample_path)
     return bytes(ev)
