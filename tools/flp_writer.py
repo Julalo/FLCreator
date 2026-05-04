@@ -79,8 +79,14 @@ def _var_ev(eid: int, data: bytes) -> bytes:
 
 
 def _text_ev(eid: int, text: str) -> bytes:
-    """UTF-16-LE null-terminated string event."""
+    """UTF-16-LE null-terminated string event (channel names, pattern names)."""
     encoded = (text + "\x00").encode("utf-16-le")
+    return _var_ev(eid, encoded)
+
+
+def _path_ev(eid: int, path: str) -> bytes:
+    """ASCII null-terminated string event (sample file paths)."""
+    encoded = path.encode("ascii", errors="replace") + b"\x00"
     return _var_ev(eid, encoded)
 
 
@@ -96,7 +102,7 @@ def _channel_events(index: int, name: str, sample_path: str | None, color: int =
     ev += _dword_ev(_EV_CH_COLOR, color)
     ev += _text_ev(_EV_CH_NAME, name)
     if sample_path:
-        ev += _text_ev(_EV_CH_SAMPLE, sample_path)
+        ev += _path_ev(_EV_CH_SAMPLE, sample_path)
     return bytes(ev)
 
 
