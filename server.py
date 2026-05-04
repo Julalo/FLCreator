@@ -29,6 +29,7 @@ from tools.sample_downloader import find_sample_packs as _find_sample_packs, dow
 from tools.freesound_downloader import search_freesound as _search_freesound, download_freesound_samples as _download_freesound_samples
 from tools.beat_generator import generate_beat as _generate_beat
 from tools.flp_exporter import export_flp as _export_flp
+from tools.flp_diagnose import diagnose_flp as _diagnose_flp
 
 
 # ── Lifespan ──────────────────────────────────────────────────────────────────
@@ -971,6 +972,38 @@ async def export_flp(input: ExportFlpInput, ctx: Context) -> dict:
         )
     except Exception as exc:
         return _handle_error(exc, "export_flp")
+
+
+# ── FLP diagnostics ──────────────────────────────────────────────────────────
+
+class DiagnoseFlpInput(BaseModel):
+    flp_path: str = Field(
+        ...,
+        description="Absolute path to a .flp file to analyse (e.g. your template.flp).",
+        min_length=1,
+    )
+
+
+@mcp.tool(
+    annotations={
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    }
+)
+async def diagnose_flp(input: DiagnoseFlpInput, ctx: Context) -> dict:
+    """
+    Read a .flp file and dump its raw event structure (event IDs, types, values).
+
+    Used to reverse-engineer the exact event IDs and string encodings that this
+    FL Studio version uses, so the .flp writer can match them exactly.
+    Pass your template.flp or any working FL Studio project.
+    """
+    try:
+        return await _diagnose_flp(flp_path=input.flp_path, ctx=ctx)
+    except Exception as exc:
+        return _handle_error(exc, "diagnose_flp")
 
 
 # ── Entry point ────────────────────────────────────────────────────────────────
