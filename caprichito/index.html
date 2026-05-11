@@ -1,0 +1,1107 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>El Caprichito Cafetería — Que no te falte de nada</title>
+<meta name="description" content="Cafetería de barrio. Desayunos, bocadillos, raciones, hamburguesas, pizzas, helados, cervezas y copas. Reservas: 624 847 227." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sacramento&family=Caveat:wght@500;700&family=Quicksand:wght@400;500;600;700&family=Archivo+Black&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:        #fdf9fe;
+    --paper:     #ffffff;
+    --lav-50:    #faf5fb;
+    --lav-100:   #f3ebf5;
+    --lav-200:   #e6d5e8;
+    --lav-300:   #d9c6db;
+    --lav-400:   #bfa2c2;
+    --lav-500:   #9e7da2;
+    --lav-600:   #7d5e81;
+    --ink:       #1a1a1a;
+    --ink-2:     #2c1e30;
+    --muted:     #8a7590;
+    --line:      rgba(180, 150, 183, .22);
+    --shadow:    0 1px 0 rgba(158,125,162,.06), 0 18px 32px -22px rgba(125,94,129,.3);
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  body{
+    font-family: "Quicksand", system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    background-image:
+      radial-gradient(700px 500px at -10% -5%, #f3ecf5 0%, transparent 60%),
+      radial-gradient(600px 400px at 110% 10%, #eee6f0 0%, transparent 60%),
+      radial-gradient(900px 600px at 50% 110%, #f0e8f2 0%, transparent 55%);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.55;
+  }
+  ::selection{ background: var(--lav-300); color: #fff; }
+  p{ margin:0; }
+  a{ color: inherit; text-decoration: none; }
+  button{ font: inherit; cursor: pointer; }
+
+  /* TYPE SYSTEM */
+  .display{
+    font-family: "Archivo Black", "Quicksand", sans-serif;
+    font-weight: 400;
+    letter-spacing: .02em;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .script{
+    font-family: "Sacramento", "Caveat", cursive;
+    color: var(--lav-500);
+    line-height: .9;
+    font-weight: 400;
+  }
+  .hand{
+    font-family: "Caveat", cursive;
+    color: var(--lav-500);
+  }
+  h1,h2,h3,h4{ margin:0; }
+
+  .wrap{ width: min(1280px, 94vw); margin-inline: auto; }
+
+  /* ====== TOPBAR ====== */
+  .topbar{
+    position: sticky; top:0; z-index: 40;
+    background: rgba(251,247,253,.94);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .topbar-inner{ display:flex; align-items:center; justify-content:space-between; padding: 10px 0; gap: 12px; }
+  .brandmark{ display:flex; align-items:center; gap:10px; min-width:0; }
+  .brandmark .mark{ width:44px; height:44px; flex:none; }
+  /* Real logo images */
+  .logo-img{ display:block; height:auto; }
+  .logo-img--bar{ height: 52px; width: auto; }
+  .logo-img--hero{ width: min(560px, 80%); max-width: 100%; margin: 0 auto 4px; }
+  .logo-img--foot, .logo-img--footer{ width: 220px; max-width: 100%; }
+  @media (max-width: 760px){
+    .logo-img--bar{ height: 42px; }
+  }
+  .topnav{ display:flex; gap: 4px; align-items:center; }
+  .topnav a.nav-link{
+    padding: 8px 12px; border-radius: 999px;
+    font-weight: 700; font-size: 14px; color: var(--ink-2);
+    transition: background .2s ease;
+  }
+  .topnav a.nav-link:hover{ background: var(--lav-50); color: var(--lav-600); }
+  .pill-call{
+    display:inline-flex; align-items:center; gap:8px;
+    background: var(--lav-500); color: #fff !important;
+    padding: 9px 14px; border-radius: 999px; font-weight: 700; font-size:14px;
+    box-shadow: 0 8px 20px -12px rgba(158,125,162,.6);
+  }
+  .pill-call:hover{ background: var(--lav-600); }
+  .pill-call .dot{ width:8px; height:8px; border-radius:999px; background: #c8f3d2; box-shadow: 0 0 0 3px rgba(200,243,210,.25); }
+  @media (max-width: 760px){ .topnav .nav-link{ display:none; } }
+
+  /* ====== HERO (poster style) ====== */
+  .hero{
+    position: relative;
+    padding: 36px 0 24px;
+    overflow: hidden;
+  }
+  .hero-poster{
+    position: relative;
+    background: var(--paper);
+    border-radius: 32px;
+    padding: 56px 32px 64px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    text-align: center;
+  }
+  @media (max-width: 600px){ .hero-poster{ padding: 40px 18px 48px; border-radius: 22px; } }
+
+  /* big background mandala */
+  .hero-mandala{
+    position:absolute; left:50%; top: 18%;
+    transform: translate(-50%, 0);
+    width: min(620px, 92%); aspect-ratio: 1/1;
+    opacity: .35;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .corner-doodle{ position:absolute; opacity:.55; pointer-events:none; }
+  .corner-doodle.tl{ top: 10px; left: 10px; width: 90px; }
+  .corner-doodle.tr{ top: 10px; right: 10px; width: 90px; transform: scaleX(-1); }
+  .corner-doodle.bl{ bottom: 10px; left: 10px; width: 90px; transform: scaleY(-1); }
+  .corner-doodle.br{ bottom: 10px; right: 10px; width: 90px; transform: scale(-1,-1); }
+
+  .heart-doodle{ position:absolute; color: var(--lav-300); opacity:.7; pointer-events:none; }
+
+  .hero-content{ position: relative; z-index: 2; }
+  .hero-brand{
+    display:flex; align-items:center; justify-content:center; gap: 14px;
+    margin-bottom: 8px;
+  }
+  .hero-brand .mark{ width: 56px; height: 56px; }
+  .hero-brand-text{ text-align:left; }
+  .hero-brand-text .title{
+    font-family: "Archivo Black", sans-serif;
+    font-size: clamp(22px, 4.5vw, 34px);
+    letter-spacing: .06em; line-height: 1; color: var(--ink);
+  }
+  .hero-brand-text .sub{
+    font-family: "Quicksand", sans-serif; font-weight: 600;
+    font-size: clamp(10px, 1.4vw, 12px); letter-spacing: .42em;
+    color: var(--lav-400); text-transform: uppercase; margin-top: 6px;
+  }
+
+  .hero-claim-script{
+    font-family: "Sacramento", cursive;
+    color: var(--lav-500);
+    font-size: clamp(64px, 14vw, 140px);
+    line-height: .9;
+    margin: 8px 0 6px;
+    position: relative; display: inline-block;
+  }
+  .hero-claim-script::after{
+    content:""; display:block;
+    width: 60%; height: 4px; margin: -6px auto 0;
+    background: var(--lav-300); border-radius: 999px;
+    transform: rotate(-1deg);
+  }
+  .hero-tagline{
+    font-family: "Caveat", cursive;
+    color: var(--ink-2);
+    font-size: clamp(22px, 3.4vw, 30px);
+    margin-top: 12px;
+  }
+
+  .hero-feature-row{
+    display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+    margin: 36px auto 16px;
+    max-width: 760px;
+    position: relative;
+  }
+  @media (max-width: 540px){ .hero-feature-row{ grid-template-columns: 1fr; gap: 24px; } }
+  .hf-divider{
+    position:absolute; left:50%; top:6%; bottom:6%;
+    width: 0; border-left: 2px dotted var(--lav-200);
+    transform: translateX(-50%);
+  }
+  @media (max-width: 540px){ .hf-divider{ display:none; } }
+
+  .hf-card{ text-align:center; position: relative; }
+  .hf-card .puddle{
+    width: 78%; max-width: 240px; aspect-ratio: 16/9; margin: 0 auto;
+    background: radial-gradient(ellipse at center, var(--lav-100) 0%, var(--lav-50) 60%, transparent 75%);
+    border-radius: 50%;
+    display:flex; align-items:flex-end; justify-content:center;
+    position: relative;
+  }
+  .hf-card .puddle svg{ width: 80%; height: auto; margin-bottom: 8%; }
+  .hf-card .label{
+    margin-top: 6px;
+    font-family: "Caveat", cursive;
+    font-size: clamp(24px, 3.4vw, 32px);
+    color: var(--ink-2);
+  }
+  .hf-card .label em{
+    font-family: "Sacramento", cursive;
+    font-style: normal;
+    color: var(--lav-500);
+    font-size: 1.4em;
+    margin-left: 4px;
+  }
+  .hf-card .label .heart{ color: var(--lav-300); font-size: .7em; vertical-align: middle; margin-left: 4px; }
+
+  /* hero CTAs band */
+  .hero-cta-band{
+    margin: 18px auto 0;
+    max-width: 720px;
+    background: var(--lav-50);
+    border: 1.5px dashed var(--lav-300);
+    border-radius: 24px;
+    padding: 16px 20px;
+    display:flex; align-items:center; justify-content:center; gap: 14px;
+    flex-wrap: wrap;
+    font-family: "Quicksand", sans-serif;
+    color: var(--ink-2); font-weight: 600;
+  }
+  .hero-cta-band .icon{
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--lav-200); color: var(--lav-600);
+    display:grid; place-items:center; flex: none;
+  }
+  .hero-cta-band b{ color: var(--lav-600); }
+
+  .hero-ctas{ display:flex; flex-wrap:wrap; gap: 10px; margin-top: 22px; justify-content: center; }
+  .btn{
+    display:inline-flex; align-items:center; gap:10px;
+    padding: 14px 22px; border-radius: 999px; font-weight: 700; font-size: 14px;
+    border: 0; transition: transform .15s ease, box-shadow .2s ease, background .2s ease;
+    letter-spacing: .04em; text-transform: uppercase;
+  }
+  .btn:hover{ transform: translateY(-1px); }
+  .btn-primary{ background: var(--lav-500); color: #fff; box-shadow: 0 12px 24px -14px rgba(158,125,162,.6); }
+  .btn-primary:hover{ background: var(--lav-600); }
+  .btn-ghost{ background: transparent; color: var(--lav-600); box-shadow: inset 0 0 0 2px var(--lav-400); }
+  .btn-ghost:hover{ background: var(--lav-500); color: #fff; box-shadow: inset 0 0 0 2px var(--lav-500); }
+
+  /* ====== OFFER STRIP ====== */
+  .offer{ padding: 40px 0 8px; }
+  .offer-title{ text-align:center; margin-bottom: 22px; }
+  .offer-title .script{ font-size: clamp(40px, 6vw, 56px); }
+  .offer-title .display{ font-size: clamp(14px, 1.8vw, 16px); letter-spacing: .35em; text-transform: uppercase; color: var(--lav-400); margin-top: 4px; }
+
+  .offer-grid{ display:grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+  @media (max-width: 880px){ .offer-grid{ grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 480px){ .offer-grid{ grid-template-columns: repeat(2, 1fr); } }
+  .offer-card{
+    background: var(--paper);
+    border: 1.5px solid var(--line);
+    border-radius: 22px;
+    padding: 18px 12px;
+    text-align: center;
+    transition: transform .2s ease, box-shadow .25s ease, border-color .2s ease;
+  }
+  .offer-card:hover{ transform: translateY(-3px); box-shadow: var(--shadow); border-color: var(--lav-300); }
+  .offer-emoji{
+    width: 56px; height: 56px; border-radius: 50%; margin: 0 auto 10px;
+    display:grid; place-items:center;
+    background: var(--lav-50); color: var(--lav-500);
+  }
+  .offer-card h4{
+    font-family: "Quicksand", sans-serif; font-weight: 700;
+    font-size: 13px; letter-spacing:.06em; text-transform: uppercase; color: var(--ink-2);
+  }
+  .offer-card .hint{ font-family: "Caveat", cursive; font-size: 18px; color: var(--lav-400); margin-top: 2px; line-height: 1.1;}
+
+  /* ====== SECTION CHROME ====== */
+  section.section{ padding: 64px 0; }
+  @media (max-width: 760px){ section.section{ padding: 48px 0; } }
+  .section-head{ text-align:center; margin-bottom: 32px; position: relative; }
+  .section-head .eyebrow{ font-family:"Quicksand"; font-weight:700; font-size: 12px; letter-spacing: .4em; text-transform: uppercase; color: var(--lav-400); }
+  .section-head .title{ font-family: "Sacramento", cursive; color: var(--lav-500); font-size: clamp(56px, 8vw, 88px); line-height: 1; margin-top: 6px; }
+  .section-head .subtitle{ color: var(--muted); margin-top: 8px; max-width: 56ch; margin-inline:auto; }
+
+  /* ====== MENU ====== */
+  .menu-board{
+    background: var(--paper);
+    border: 1.5px solid var(--line);
+    border-radius: 28px;
+    padding: 24px;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+  @media (max-width: 600px){ .menu-board{ padding: 16px; border-radius: 22px; } }
+
+  .menu-tabs{
+    display:flex; gap: 6px; overflow-x: auto;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--line);
+    scrollbar-width: thin;
+  }
+  .menu-tabs::-webkit-scrollbar{ height: 6px; }
+  .menu-tabs::-webkit-scrollbar-thumb{ background: var(--lav-200); border-radius: 999px; }
+  .menu-tab{
+    flex: none;
+    background: transparent;
+    border: 1.5px solid transparent;
+    color: var(--ink-2);
+    padding: 10px 16px; border-radius: 999px;
+    font-weight: 700; font-size: 13px;
+    letter-spacing: .06em; text-transform: uppercase;
+    white-space: nowrap;
+    transition: all .15s ease;
+  }
+  .menu-tab:hover{ background: var(--lav-50); }
+  .menu-tab[aria-selected="true"]{
+    background: var(--lav-500); color: #fff; border-color: var(--lav-500);
+  }
+  .menu-tab .price{
+    margin-left: 8px; padding: 2px 8px; border-radius: 999px;
+    background: rgba(255,255,255,.18); font-size: 11px; letter-spacing: 0;
+  }
+  .menu-tab:not([aria-selected="true"]) .price{
+    background: var(--lav-50); color: var(--lav-600);
+  }
+
+  .menu-panel{ display:none; padding-top: 22px; }
+  .menu-panel.active{ display:block; animation: fadeUp .25s ease; }
+  @keyframes fadeUp{ from{ opacity:0; transform: translateY(6px);} to{opacity:1; transform:none;} }
+
+  .menu-panel-head{
+    display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between;
+    gap: 10px; margin-bottom: 6px;
+  }
+  .menu-panel-head h3{
+    font-family: "Sacramento", cursive; color: var(--lav-500);
+    font-size: clamp(34px, 5vw, 46px); line-height: 1;
+  }
+  .menu-panel-head .note{ font-family: "Caveat", cursive; color: var(--lav-400); font-size: 18px; }
+  .menu-panel-head .flat-price{
+    background: var(--lav-500); color: #fff;
+    padding: 6px 14px; border-radius: 999px;
+    font-weight: 700; font-size: 13px; letter-spacing:.06em;
+  }
+
+  .menu-items{
+    list-style: none; margin: 8px 0 0; padding: 0;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4px 32px;
+  }
+  @media (max-width: 720px){ .menu-items{ grid-template-columns: 1fr; gap: 2px; } }
+
+  .menu-item{
+    display:grid; grid-template-columns: 1fr auto; gap: 12px;
+    align-items: baseline;
+    padding: 12px 0;
+    border-bottom: 1px dotted var(--line);
+  }
+  .menu-item:last-child{ border-bottom: 0; }
+  .menu-item .name{ font-weight: 700; color: var(--ink-2); font-size: 16px; }
+  .menu-item .desc{ display:block; margin-top: 2px; font-weight: 500; color: var(--muted); font-size: 13px; line-height: 1.35; }
+  .menu-item .price{
+    font-family: "Caveat", cursive;
+    color: var(--lav-600);
+    font-size: 22px; font-weight: 700;
+    white-space: nowrap;
+  }
+  .menu-item .price.null{
+    font-family: "Caveat", cursive; color: var(--lav-400); font-size: 16px;
+    border: 1.5px dashed var(--lav-300); padding: 2px 10px; border-radius: 999px;
+  }
+
+  .menu-foot{
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--lav-50);
+    border: 1.5px dashed var(--lav-200);
+    border-radius: 16px;
+    color: var(--ink-2);
+    font-size: 14px; font-weight: 600;
+    display:flex; gap: 12px; align-items:center;
+  }
+  .menu-foot .icon{ width:34px; height:34px; border-radius:50%; background: var(--lav-500); color:#fff; display:grid; place-items:center; flex:none; }
+
+  .null-banner{
+    margin: 18px 0 0;
+    border: 1.5px dashed var(--lav-300);
+    background: #faf3ff;
+    border-radius: 16px;
+    padding: 12px 14px;
+    color: var(--ink-2);
+    font-size: 13.5px; font-weight: 500;
+    display:flex; gap: 10px; align-items:flex-start;
+  }
+  .null-banner b{ color: var(--lav-600); }
+  .null-banner .nullpill{
+    font-family:'Caveat', cursive; color: var(--lav-500);
+    border: 1.5px dashed var(--lav-300); padding: 1px 8px; border-radius: 999px; display:inline-block;
+  }
+
+  /* ====== ABOUT ====== */
+  .about-grid{ display:grid; grid-template-columns: 1fr 1.1fr; gap: 48px; align-items: center; }
+  @media (max-width: 880px){ .about-grid{ grid-template-columns: 1fr; gap: 28px; } }
+  .about-art{
+    position:relative;
+    aspect-ratio: 4 / 5;
+    border-radius: 28px;
+    overflow: hidden;
+    background:
+      repeating-linear-gradient(45deg, #f0e3f9 0 18px, #e6d4f3 18px 36px);
+    border: 1.5px solid var(--line);
+    box-shadow: var(--shadow);
+  }
+  .about-art .photoslot{
+    position: absolute; inset: auto 0 50% 0; transform: translateY(50%);
+    text-align:center; color: var(--lav-600);
+    font-family: "Caveat", cursive; font-size: 22px; padding: 0 20px;
+  }
+  .about-art .stamp{
+    position:absolute; bottom: 16px; right: 16px;
+    background: var(--paper); border: 1.5px solid var(--lav-400);
+    border-radius: 14px; padding: 10px 14px;
+    font-family: "Caveat", cursive; color: var(--ink-2);
+    font-size: 18px; line-height:1.1;
+    transform: rotate(4deg);
+  }
+  .about-art .stamp b{ display:block; font-family:"Sacramento", cursive; color: var(--lav-500); font-size: 26px; }
+
+  .about-copy h2.title{ font-family:"Sacramento", cursive; color: var(--lav-500); font-size: clamp(54px, 8vw, 76px); line-height: 1; }
+  .about-copy .lead{ font-size: 17px; margin-top: 14px; color: var(--ink-2); }
+  .about-copy p + p{ margin-top: 14px; }
+  .about-copy .sig{ font-family: "Sacramento", cursive; color: var(--lav-500); font-size: 36px; line-height:1; margin-top: 16px; }
+  .about-stats{ display:grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 24px; }
+  .about-stat{
+    background: var(--paper); border: 1.5px solid var(--line); border-radius: 18px;
+    padding: 14px; text-align:center;
+  }
+  .about-stat b{ display:block; font-family:"Sacramento", cursive; color: var(--lav-500); font-size: 36px; line-height: 1; }
+  .about-stat span{ font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+
+  /* ====== VISIT (dark card) ====== */
+  .visit{
+    background: linear-gradient(135deg, var(--lav-600), var(--lav-500));
+    color: #fff;
+    border-radius: 28px;
+    padding: 36px;
+    margin-top: 24px;
+    display:grid; grid-template-columns: 1fr 1fr; gap: 32px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+  @media (max-width: 760px){ .visit{ grid-template-columns: 1fr; padding: 24px; } }
+  .visit::before{
+    content: ""; position: absolute; right: -80px; bottom: -80px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(255,255,255,.12), transparent 70%);
+    border-radius: 50%;
+  }
+  .visit > *{ position: relative; z-index: 1; }
+  .visit .eyebrow{ font-family:"Quicksand"; font-weight:700; font-size: 11px; letter-spacing: .4em; text-transform: uppercase; color: #f1e6fb; }
+  .visit h3.title{ font-family: "Sacramento", cursive; font-size: 56px; line-height: 1; color: #fff; margin-top: 6px; }
+  .visit p, .visit li{ color: rgba(255,255,255,.85); }
+  .hours{ list-style:none; padding:0; margin: 14px 0 0; }
+  .hours li{
+    display:flex; justify-content: space-between; padding: 10px 0;
+    border-bottom: 1px dashed rgba(255,255,255,.22);
+    font-weight: 600; font-size: 15px;
+  }
+  .hours li.today{ color: #fff5d6; font-weight: 700; }
+  .hours li.today::after{ content:" hoy"; font-family:"Sacramento", cursive; color: #fff5d6; font-size: 22px; margin-left: 8px; }
+
+  .visit-cta{ margin-top: 18px; display:flex; flex-wrap:wrap; gap: 10px; }
+  .visit-cta .btn-primary{ background: #fff; color: var(--lav-600); }
+  .visit-cta .btn-primary:hover{ background: var(--lav-50); }
+  .visit-cta .btn-ghost{ box-shadow: inset 0 0 0 2px #fff; color: #fff; }
+  .visit-cta .btn-ghost:hover{ background: #fff; color: var(--lav-600); box-shadow: inset 0 0 0 2px #fff; }
+
+  /* ====== FOOTER ====== */
+  footer{ background: #2c2030; color: #efe5f7; margin-top: 64px; }
+  .foot-top{ padding: 56px 0 32px; display:grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 36px; }
+  @media (max-width: 760px){ .foot-top{ grid-template-columns: 1fr; gap: 28px; padding: 40px 0 16px; } }
+  .foot-top h4{ color: #fff; font-family:"Quicksand", sans-serif; font-weight: 700; font-size: 12px; letter-spacing: .4em; text-transform: uppercase; }
+  .foot-top h4::after{ content:""; display:block; width: 28px; height: 2px; background: var(--lav-300); border-radius: 2px; margin-top: 8px; }
+  .foot-top ul{ list-style:none; padding: 0; margin: 14px 0 0; }
+  .foot-top li{ padding: 4px 0; color: rgba(239,229,247,.72); font-weight: 500; font-size: 14px;}
+  .foot-top a:hover{ color: var(--lav-200); }
+  .foot-brand .name{ font-family:"Archivo Black", sans-serif; font-size: 22px; letter-spacing: .06em; color: #fff; }
+  .foot-brand .tag{ font-family:"Sacramento", cursive; color: var(--lav-200); font-size: 28px; line-height: 1; margin-top: 2px;}
+  .foot-brand p{ margin-top: 12px; color: rgba(239,229,247,.72); max-width: 36ch; }
+  .socials{ display:flex; gap: 10px; margin-top: 16px; }
+  .socials a{
+    width: 42px; height: 42px; border-radius: 50%;
+    display:grid; place-items:center;
+    background: rgba(255,255,255,.08);
+    transition: background .2s ease, transform .15s ease;
+  }
+  .socials a:hover{ background: var(--lav-500); transform: translateY(-2px); }
+  .ig-handle{ font-family:"Sacramento", cursive; color: var(--lav-200); font-size: 24px; margin-top: 8px; display:inline-block; }
+  .foot-bot{
+    border-top: 1px solid rgba(255,255,255,.12);
+    padding: 18px 0; display:flex; flex-wrap:wrap; gap: 12px;
+    justify-content: space-between; align-items:center;
+    font-size: 12px; color: rgba(239,229,247,.55);
+  }
+  .foot-bot a{ color: var(--lav-200); }
+
+</style>
+</head>
+<body>
+
+<!-- ======= TOP BAR ======= -->
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brandmark" href="#top" aria-label="El Caprichito Cafetería — inicio">
+      <img class="logo-img logo-img--bar" src="assets/logo-caprichito.png" alt="El Caprichito Cafetería" />
+    </a>
+    <nav class="topnav" aria-label="Principal">
+      <a class="nav-link" href="#carta">Carta</a>
+      <a class="nav-link" href="#nosotros">Nosotros</a>
+      <a class="nav-link" href="#visitanos">Visítanos</a>
+      <a class="pill-call" href="tel:+34624847227" aria-label="Llamar para reservas">
+        <span class="dot" aria-hidden="true"></span>
+        624 847 227
+      </a>
+    </nav>
+  </div>
+</header>
+
+<a id="top"></a>
+
+<!-- ======= HERO POSTER ======= -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-poster">
+
+      <!-- Background mandala -->
+      <svg class="hero-mandala" viewBox="0 0 100 100" aria-hidden="true">
+        <g transform="translate(50 50)" fill="none" stroke="#d9c6db" stroke-width=".9" stroke-linejoin="round" stroke-linecap="round">
+          <g opacity=".9">
+            <path d="M0 -42 C 14 -32, 14 -14, 0 0 C -14 -14, -14 -32, 0 -42 Z"/>
+            <path d="M0 -42 C 14 -32, 14 -14, 0 0 C -14 -14, -14 -32, 0 -42 Z" transform="rotate(45)"/>
+            <path d="M0 -42 C 14 -32, 14 -14, 0 0 C -14 -14, -14 -32, 0 -42 Z" transform="rotate(90)"/>
+            <path d="M0 -42 C 14 -32, 14 -14, 0 0 C -14 -14, -14 -32, 0 -42 Z" transform="rotate(135)"/>
+            <path d="M0 -42 C 14 -32, 14 -14, 0 0 C -14 -14, -14 -32, 0 -42 Z" transform="rotate(180)"/>
+            <path d="M0 -42 C 14 -32, 14 -14, 0 0 C -14 -14, -14 -32, 0 -42 Z" transform="rotate(225)"/>
+            <path d="M0 -42 C 14 -32, 14 -14, 0 0 C -14 -14, -14 -32, 0 -42 Z" transform="rotate(270)"/>
+            <path d="M0 -42 C 14 -32, 14 -14, 0 0 C -14 -14, -14 -32, 0 -42 Z" transform="rotate(315)"/>
+          </g>
+          <g opacity=".5">
+            <path d="M0 -30 C 9 -22, 9 -10, 0 0 C -9 -10, -9 -22, 0 -30 Z"/>
+            <path d="M0 -30 C 9 -22, 9 -10, 0 0 C -9 -10, -9 -22, 0 -30 Z" transform="rotate(60)"/>
+            <path d="M0 -30 C 9 -22, 9 -10, 0 0 C -9 -10, -9 -22, 0 -30 Z" transform="rotate(120)"/>
+            <path d="M0 -30 C 9 -22, 9 -10, 0 0 C -9 -10, -9 -22, 0 -30 Z" transform="rotate(180)"/>
+            <path d="M0 -30 C 9 -22, 9 -10, 0 0 C -9 -10, -9 -22, 0 -30 Z" transform="rotate(240)"/>
+            <path d="M0 -30 C 9 -22, 9 -10, 0 0 C -9 -10, -9 -22, 0 -30 Z" transform="rotate(300)"/>
+          </g>
+        </g>
+      </svg>
+
+      <!-- Corner leaf doodles -->
+      <svg class="corner-doodle tl" viewBox="0 0 100 100" fill="none" stroke="#d9c6db" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="M10 60 Q 20 30 50 20"/>
+        <path d="M28 40 Q 30 30 40 28"/>
+        <path d="M40 30 Q 42 22 50 22"/>
+        <path d="M22 50 Q 18 42 14 42"/>
+      </svg>
+      <svg class="corner-doodle tr" viewBox="0 0 100 100" fill="none" stroke="#d9c6db" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="M10 60 Q 20 30 50 20"/>
+        <path d="M28 40 Q 30 30 40 28"/>
+        <path d="M22 50 Q 18 42 14 42"/>
+      </svg>
+      <svg class="corner-doodle bl" viewBox="0 0 100 100" fill="none" stroke="#d9c6db" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="M10 60 Q 20 30 50 20"/>
+        <path d="M28 40 Q 30 30 40 28"/>
+      </svg>
+      <svg class="corner-doodle br" viewBox="0 0 100 100" fill="none" stroke="#d9c6db" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="M10 60 Q 20 30 50 20"/>
+        <path d="M28 40 Q 30 30 40 28"/>
+      </svg>
+
+      <!-- Floating hearts -->
+      <svg class="heart-doodle" style="top: 38%; left: 6%; width: 26px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 21s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/>
+      </svg>
+      <svg class="heart-doodle" style="top: 44%; right: 6%; width: 22px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 21s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/>
+      </svg>
+      <svg class="heart-doodle" style="bottom: 16%; left: 12%; width: 18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 21s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/>
+      </svg>
+
+      <!-- Content -->
+      <div class="hero-content">
+        <div class="hero-brand">
+          <img class="logo-img logo-img--hero" src="assets/logo-caprichito.png" alt="El Caprichito Cafetería" />
+        </div>
+
+        <h1 class="hero-claim-script">Tu rinconcito</h1>
+        <p class="hero-tagline">¡Que no te falte de nada!</p>
+
+        <!-- Feature row (pan / hielo style from the poster, here: desayunos / copas) -->
+        <div class="hero-feature-row">
+          <div class="hf-divider" aria-hidden="true"></div>
+          <div class="hf-card">
+            <div class="puddle">
+              <!-- coffee cup -->
+              <svg viewBox="0 0 120 80" aria-hidden="true">
+                <g fill="none" stroke="#7d5e81" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 28 L 22 64 a 8 8 0 0 0 8 8 h 40 a 8 8 0 0 0 8 -8 L 80 28 Z" fill="#fff"/>
+                  <path d="M80 36 h 10 a 10 10 0 0 1 0 20 h -8"/>
+                  <path d="M35 16 c 2 -4 -2 -8 0 -12"/>
+                  <path d="M50 16 c 2 -4 -2 -8 0 -12"/>
+                  <path d="M65 16 c 2 -4 -2 -8 0 -12"/>
+                </g>
+              </svg>
+            </div>
+            <div class="label">Empieza tu <em>día</em><span class="heart">♥</span></div>
+          </div>
+          <div class="hf-card">
+            <div class="puddle">
+              <!-- wine glass -->
+              <svg viewBox="0 0 100 100" aria-hidden="true">
+                <g fill="none" stroke="#7d5e81" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M30 14 H 70 L 64 44 a 14 14 0 0 1 -28 0 Z" fill="#f3ebf5"/>
+                  <path d="M50 58 V 84"/>
+                  <path d="M36 84 H 64"/>
+                </g>
+              </svg>
+            </div>
+            <div class="label">Disfruta tu <em>noche</em><span class="heart">♥</span></div>
+          </div>
+        </div>
+
+        <!-- CTA band: phone -->
+        <div class="hero-cta-band">
+          <span class="icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+          </span>
+          <span>Escríbenos al <b>624 847 227</b> · o pásate por el local <span class="hand" style="font-size:22px;">¡te esperamos!</span></span>
+        </div>
+
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="#carta">
+            Ver la carta
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </a>
+          <a class="btn btn-ghost" href="tel:+34624847227">Reservar mesa</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OFFER STRIP -->
+  <div class="wrap offer">
+    <div class="offer-title">
+      <div class="script" style="font-family:'Sacramento', cursive;">Aquí encuentras de todo</div>
+      <div class="display">de la mañana a la noche</div>
+    </div>
+    <div class="offer-grid">
+      <div class="offer-card">
+        <div class="offer-emoji">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11h14a4 4 0 0 1 0 8H6a2 2 0 0 1-2-2v-6Z"/><path d="M7 4c0 1-1 1-1 2s1 1 1 2"/><path d="M11 4c0 1-1 1-1 2s1 1 1 2"/><path d="M15 4c0 1-1 1-1 2s1 1 1 2"/></svg>
+        </div>
+        <h4>Desayunos</h4>
+        <div class="hint">café, tostadas, zumos</div>
+      </div>
+      <div class="offer-card">
+        <div class="offer-emoji">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14c2-1 4-1 6 0s4 1 6 0 4-1 6 0"/><path d="M5 19h14"/><path d="M7 10c0-3 2-5 5-5s5 2 5 5"/></svg>
+        </div>
+        <h4>Pan y dulces</h4>
+        <div class="hint">artesanales</div>
+      </div>
+      <div class="offer-card">
+        <div class="offer-emoji">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6"/><path d="M8 8c0-2 2-4 4-4s4 2 4 4"/><path d="M5 9h14l-2 12H7L5 9Z"/></svg>
+        </div>
+        <h4>Comidas</h4>
+        <div class="hint">para compartir</div>
+      </div>
+      <div class="offer-card">
+        <div class="offer-emoji">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11a7 7 0 0 1 14 0v3a7 7 0 0 1-14 0v-3Z"/><path d="M5 11l2-6h10l2 6"/></svg>
+        </div>
+        <h4>Helados</h4>
+        <div class="hint">en cualquier momento</div>
+      </div>
+      <div class="offer-card">
+        <div class="offer-emoji">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v3a6 6 0 0 1-12 0V3Z"/><path d="M9 12v8"/><path d="M15 12v8"/><path d="M7 20h10"/></svg>
+        </div>
+        <h4>Cervezas</h4>
+        <div class="hint">fresquitas</div>
+      </div>
+      <div class="offer-card">
+        <div class="offer-emoji">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16l-8 9-8-9Z"/><path d="M12 13v7"/><path d="M8 20h8"/></svg>
+        </div>
+        <h4>Copas</h4>
+        <div class="hint">por la noche</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======= MENU ======= -->
+<section class="section" id="carta">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">la carta</div>
+      <h2 class="title">Lo que cocinamos hoy</h2>
+      <p class="subtitle">Si echas algo en falta, pregunta al camarero — cada semana sacamos sugerencias nuevas, sobre todo de pescados.</p>
+    </div>
+
+    <div class="menu-board">
+      <div class="menu-tabs" role="tablist" aria-label="Categorías de la carta">
+        <!-- Filled by JS -->
+      </div>
+
+      <div class="menu-panels"><!-- Filled by JS --></div>
+
+      <div class="null-banner">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none; margin-top:1px; color: var(--lav-500);"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        <div>
+          <b>Por confirmar:</b> en la foto de la carta había algunos precios y nombres que no se leen con claridad — están marcados como
+          <span class="nullpill">null</span>
+          para que los repases. También faltan precios de <b>desayunos</b>, <b>pan y dulces</b>, <b>helados</b>, <b>cervezas</b>, <b>refrescos</b> y <b>copas</b>.
+        </div>
+      </div>
+
+      <div class="menu-foot">
+        <div class="icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+        </div>
+        <div>Reservas y pedidos para llevar: <a href="tel:+34624847227" style="color: var(--lav-600); text-decoration: underline;"><b>624 847 227</b></a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======= ABOUT ======= -->
+<section class="section" id="nosotros">
+  <div class="wrap about-grid">
+    <div class="about-art" aria-hidden="true">
+      <div class="photoslot">[ aquí va una foto del local ]</div>
+      <div class="stamp"><b>El Caprichito</b>desde 2023</div>
+    </div>
+    <div class="about-copy">
+      <div class="eyebrow" style="font-family:'Quicksand'; font-weight:700; font-size:12px; letter-spacing:.4em; text-transform:uppercase; color: var(--lav-400);">sobre nosotros</div>
+      <h2 class="title">Una cafetería de barrio.</h2>
+      <p class="lead">
+        El Caprichito es un sitio para todos: el que cruza la puerta por la mañana
+        a por su café, el que se sienta a leer, los abuelos del jueves, las
+        pandillas del finde. Aquí cabemos todos.
+      </p>
+      <p>
+        Cocinamos sin atajos: las croquetas las hacemos en casa, el pan es del
+        horno de al lado y los dulces los amasamos por la mañana. Si te apetece
+        algo que no veas en la carta, pregunta — casi siempre encontramos la manera.
+      </p>
+      <div class="sig">— Hasta luego, vecino ♡</div>
+      <div class="about-stats">
+        <div class="about-stat"><b>+12</b><span>horas al día</span></div>
+        <div class="about-stat"><b>100%</b><span>casero</span></div>
+        <div class="about-stat"><b>1</b><span>familia detrás</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap" id="visitanos">
+    <div class="visit">
+      <div>
+        <div class="eyebrow">visítanos</div>
+        <h3 class="title">Pásate cuando quieras</h3>
+        <p style="margin-top:10px;">
+          Aceptamos reservas por teléfono y también puedes llamar para
+          encargar pedidos para llevar. ¡Te esperamos!
+        </p>
+        <div class="visit-cta">
+          <a class="btn btn-primary" href="tel:+34624847227">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+            624 847 227
+          </a>
+          <a class="btn btn-ghost" href="https://instagram.com/elcaprichito2023" target="_blank" rel="noopener">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37Z"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+            @elcaprichito2023
+          </a>
+        </div>
+      </div>
+      <div>
+        <div class="eyebrow">horario</div>
+        <ul class="hours" id="hoursList"><!-- filled by JS --></ul>
+        <p style="font-family:'Sacramento', cursive; color: #f1e6fb; font-size: 26px; margin-top: 8px; line-height:1;">El horario es orientativo</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======= FOOTER ======= -->
+<footer>
+  <div class="wrap foot-top">
+    <div class="foot-brand">
+      <div style="display:flex; gap:14px; align-items:center;">
+        <img class="logo-img logo-img--footer" src="assets/logo-caprichito.png" alt="El Caprichito Cafetería" />
+      </div>
+      <p>Comida casera, café recién hecho y un trato de los de toda la vida. Te esperamos.</p>
+      <div class="socials">
+        <a href="https://instagram.com/elcaprichito2023" target="_blank" rel="noopener" aria-label="Instagram @elcaprichito2023">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37Z"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+        </a>
+        <a href="tel:+34624847227" aria-label="Llamar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+        </a>
+        <a href="https://wa.me/34624847227" target="_blank" rel="noopener" aria-label="WhatsApp">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3.6-7.2L21 3l-1.5 4.2A9 9 0 0 1 21 12Z"/><path d="M8 10c0 4 2 6 6 6"/></svg>
+        </a>
+      </div>
+      <div class="ig-handle">@elcaprichito2023</div>
+    </div>
+
+    <div>
+      <h4>Visítanos</h4>
+      <ul>
+        <li>Tu barrio de siempre</li>
+        <li><a href="tel:+34624847227">624 847 227</a></li>
+        <li>Reservas y para llevar</li>
+      </ul>
+    </div>
+
+    <div>
+      <h4>Carta</h4>
+      <ul>
+        <li><a href="#carta">Entrantes &amp; raciones</a></li>
+        <li><a href="#carta">Bocadillos &amp; camperos</a></li>
+        <li><a href="#carta">Hamburguesas &amp; pizzas</a></li>
+        <li><a href="#carta">Infantil</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="wrap foot-bot">
+    <div>© <span id="year"></span> El Caprichito Cafetería — hecho con cariño en el barrio.</div>
+    <div>Instagram <a href="https://instagram.com/elcaprichito2023" target="_blank" rel="noopener">@elcaprichito2023</a></div>
+  </div>
+</footer>
+
+<script>
+const MENU = [
+  {
+    id: "entrantes",
+    name: "Entrantes",
+    note: "para empezar y compartir",
+    items: [
+      { name: "Almejas a la marinera",                  price: 8.00 },
+      { name: null,                                     price: 5.00, desc: "(no se lee con claridad en la foto)" },
+      { name: null,                                     price: 7.00, desc: "ración con marisco — texto borroso" },
+      { name: null,                                     price: 8.00, desc: "algo con salchichas — texto borroso" },
+      { name: null,                                     price: 7.50, desc: "algo en vinagre — texto borroso" },
+      { name: "Ensaladilla rusa de la casa",            price: 5.00 },
+      { name: "Patatas El Caprichito",                  price: 6.00 },
+      { name: "Patatas Kebab",                          price: 7.00 },
+      { name: "Cochifrito",                             price: 8.00 },
+      { name: "Gambas al ajillo",                       price: 8.00 },
+      { name: "Salmorejo",                              price: 5.00, desc: "en temporada" },
+      { name: "Croquetas variadas",                     price: 10.00, desc: "jamón, merluza y gambas, y rabo de toro" }
+    ]
+  },
+  {
+    id: "principales",
+    name: "Principales",
+    items: [
+      { name: "Ensalada mixta",                         price: 6.00 },
+      { name: "Picadillo de tomate",                    price: 7.00 },
+      { name: "Plato combinado",                        price: 9.00, desc: "lomo y pollo con huevos y patatas" },
+      { name: "Pinchitos con patatas",                  price: 8.00 },
+      { name: "Alitas con patatas",                     price: 8.00 },
+      { name: "San Jacobo",                             price: 9.50 },
+      { name: "Flamenquín",                             price: 7.00 },
+      { name: "Croquetas de jamón",                     price: 8.00 },
+      { name: "Croquetas de rabo de toro",              price: 8.00 },
+      { name: "Croquetas de merluza y gambas",          price: 7.50 }
+    ]
+  },
+  {
+    id: "carnes",
+    name: "Carnes",
+    items: [
+      { name: "Solomillo al Jerez",                     price: 10.00 },
+      { name: "Carrillada Ibérica",                     price: 13.00 },
+      { name: "Pastel de berenjenas",                   price: 10.00 },
+      { name: "Lomo al vino",                           price: 9.00 },
+      { name: "Solomillo a la plancha",                 price: 10.00 },
+      { name: "Pechuga a la plancha",                   price: 7.50 },
+      { name: "Pechuga empanada",                       price: 8.00 }
+    ]
+  },
+  {
+    id: "pescados",
+    name: "Pescados",
+    note: "cada semana hay sugerencias nuevas — pregunta al camarero",
+    items: [
+      { name: "Bacalao gratinado",                      price: 13.00 },
+      { name: "Fritura de pescado",                     price: null, desc: "precio no legible en la foto" },
+      { name: "Calamares fritos",                       price: 10.00 },
+      { name: "Boquerones fritos",                      price: 9.00 },
+      { name: "Bacalao frito",                          price: 10.00 },
+      { name: "Calamares a la plancha",                 price: 10.00 },
+      { name: "Rejos",                                  price: 9.00 }
+    ]
+  },
+  {
+    id: "bocadillos",
+    name: "Bocadillos",
+    items: [
+      { name: "Lomo",          desc: "lomo, tomate, lechuga y queso",                                           price: 5.00 },
+      { name: "Pollo",         desc: "pollo, tomate, lechuga y queso",                                          price: 5.00 },
+      { name: "Serranito",     desc: "lomo, tomate, lechuga, queso, pimiento y jamón",                          price: 6.00 },
+      { name: "Caprichito",    desc: "hamburguesa, patatas y salsa cheese",                                     price: 6.50 },
+      { name: "Pollito",       desc: "lomo, tomate, lechuga, queso, pimiento, jamón y huevos fritos",           price: 7.00 },
+      { name: "Tortilla francesa",                                                                              price: 5.00 },
+      { name: "Beicon y queso",                                                                                  price: 5.00 },
+      { name: "Calamares",                                                                                       price: 7.00 }
+    ]
+  },
+  {
+    id: "camperos",
+    name: "Camperos",
+    items: [
+      { name: "Lomo",          desc: "lomo, tomate, lechuga y queso",                                           price: 4.00 },
+      { name: "Pollo",         desc: "pollo, tomate, lechuga y queso",                                          price: 4.00 },
+      { name: "Caprichito",    desc: "queso, tomate, lechuga, cebolla, beicon y huevo",                         price: 5.00 },
+      { name: "Serranito",     desc: "lomo, tomate, lechuga, queso, pimiento y jamón",                          price: 5.00 }
+    ]
+  },
+  {
+    id: "hamburguesas",
+    name: "Hamburguesas",
+    items: [
+      { name: "Con queso",                                                                                       price: 3.50 },
+      { name: "Completa",      desc: "queso, tomate, lechuga y cebolla",                                        price: 4.00 },
+      { name: "Caprichito",    desc: "queso, tomate, lechuga, cebolla, beicon y huevo",                         price: 5.00 },
+      { name: "Buey",          desc: "queso, tomate, lechuga y cebolla",                                        price: 6.00 },
+      { name: "Super Buey",    desc: "queso, tomate, lechuga, cebolla, beicon y huevo",                         price: 9.00 },
+      { name: "Crispy",        desc: "queso, tomate, lechuga y cebolla",                                        price: 5.50 }
+    ]
+  },
+  {
+    id: "pizzas",
+    name: "Pizzas",
+    flatPrice: 8.00,
+    note: "todas las pizzas al mismo precio",
+    items: [
+      { name: "Prosciutto",     desc: "tomate, mozzarella, york" },
+      { name: "Prosciutto Atún",desc: "tomate, mozzarella, york y atún" },
+      { name: "Caprichosa",     desc: "tomate, mozzarella, york y champiñones" },
+      { name: "Palmera",        desc: "tomate, mozzarella, york, champiñones y atún" },
+      { name: "Veneza",         desc: "tomate, mozzarella, beicon y atún" },
+      { name: "Pepperoni",      desc: "tomate, mozzarella, pepperoni" },
+      { name: "Cuatro Quesos",  desc: "tomate, mozzarella, roquefort, cheddar y gouda" },
+      { name: "Barbacoa",       desc: "tomate, mozzarella, BBQ, beicon, ternera y pollo" },
+      { name: "Kebab",          desc: "tomate, mozzarella, S.S. kebab, beicon y pollo kebab" },
+      { name: "Pollo Gaucha",   desc: "tomate, mozzarella, beicon y pollo asado" },
+      { name: "Carbonara",      desc: "nata, mozzarella, beicon, champiñones, cebolla y huevo" },
+      { name: "Chorizo",        desc: "tomate, mozzarella, beicon, chorizo y huevo pasteurizado" },
+      { name: "Salami",         desc: "tomate, mozzarella, salami, york y champiñones" },
+      { name: "Frutti di Mare", desc: "tomate, mozzarella, atún y gambas" }
+    ]
+  },
+  {
+    id: "infantil",
+    name: "Infantil",
+    flatPrice: 8.00,
+    note: "menú infantil completo",
+    items: [
+      { name: "Nuggets" },
+      { name: "Lagrimitas" },
+      { name: "Tortilla francesa" }
+    ]
+  },
+  {
+    id: "desayunos",
+    name: "Desayunos",
+    note: "precios y referencias por confirmar",
+    items: [ { name: null, price: null, desc: "referencias de desayunos no incluidas en la foto de la carta" } ]
+  },
+  {
+    id: "panyduces",
+    name: "Pan & dulces",
+    note: "precios y referencias por confirmar",
+    items: [ { name: null, price: null, desc: "no aparece en la foto de la carta" } ]
+  },
+  {
+    id: "helados",
+    name: "Helados",
+    note: "precios y referencias por confirmar",
+    items: [ { name: null, price: null, desc: "no aparece en la foto de la carta" } ]
+  },
+  {
+    id: "bebidas",
+    name: "Cervezas, refrescos y copas",
+    note: "precios y referencias por confirmar",
+    items: [ { name: null, price: null, desc: "no aparece en la foto de la carta" } ]
+  }
+];
+
+const tabsEl   = document.querySelector(".menu-tabs");
+const panelsEl = document.querySelector(".menu-panels");
+
+function fmtPrice(p){
+  if (p === null || p === undefined) return null;
+  return p.toFixed(2).replace(".", ",") + " €";
+}
+
+MENU.forEach((cat, i) => {
+  const tab = document.createElement("button");
+  tab.className = "menu-tab";
+  tab.setAttribute("role", "tab");
+  tab.setAttribute("aria-controls", "panel-" + cat.id);
+  tab.id = "tab-" + cat.id;
+  tab.setAttribute("aria-selected", i === 0 ? "true" : "false");
+  tab.innerHTML = cat.name + (cat.flatPrice ? `<span class="price">${fmtPrice(cat.flatPrice)}</span>` : "");
+  tab.addEventListener("click", () => selectTab(cat.id));
+  tabsEl.appendChild(tab);
+
+  const panel = document.createElement("div");
+  panel.className = "menu-panel" + (i === 0 ? " active" : "");
+  panel.id = "panel-" + cat.id;
+  panel.setAttribute("role", "tabpanel");
+  panel.setAttribute("aria-labelledby", "tab-" + cat.id);
+
+  const head = document.createElement("div");
+  head.className = "menu-panel-head";
+  head.innerHTML = `
+    <h3>${cat.name}</h3>
+    ${cat.flatPrice ? `<span class="flat-price">${fmtPrice(cat.flatPrice)} · todas</span>` : ""}
+    ${cat.note ? `<span class="note">— ${cat.note}</span>` : ""}
+  `;
+  panel.appendChild(head);
+
+  const ul = document.createElement("ul");
+  ul.className = "menu-items";
+  cat.items.forEach(it => {
+    const li = document.createElement("li");
+    li.className = "menu-item";
+    const nameHtml = it.name
+      ? `<span class="name">${it.name}</span>`
+      : `<span class="name" style="font-family:'Caveat', cursive; color: var(--lav-500);">null — por confirmar</span>`;
+    const descHtml = it.desc ? `<span class="desc">${it.desc}</span>` : "";
+    let priceHtml = "";
+    if (cat.flatPrice == null) {
+      if (it.price === undefined || it.price === null) {
+        priceHtml = `<span class="price null">null</span>`;
+      } else {
+        priceHtml = `<span class="price">${fmtPrice(it.price)}</span>`;
+      }
+    }
+    li.innerHTML = `<div>${nameHtml}${descHtml}</div>${priceHtml}`;
+    ul.appendChild(li);
+  });
+  panel.appendChild(ul);
+
+  panelsEl.appendChild(panel);
+});
+
+function selectTab(id){
+  document.querySelectorAll(".menu-tab").forEach(t => {
+    t.setAttribute("aria-selected", t.id === "tab-" + id ? "true" : "false");
+  });
+  document.querySelectorAll(".menu-panel").forEach(p => {
+    p.classList.toggle("active", p.id === "panel-" + id);
+  });
+}
+
+const HOURS = [
+  ["Lunes",     "8:00 – 24:00"],
+  ["Martes",    "8:00 – 24:00"],
+  ["Miércoles", "8:00 – 24:00"],
+  ["Jueves",    "8:00 – 24:00"],
+  ["Viernes",   "8:00 – 02:00"],
+  ["Sábado",    "9:00 – 02:00"],
+  ["Domingo",   "9:00 – 24:00"]
+];
+const hoursList = document.getElementById("hoursList");
+const todayIdx = (new Date().getDay() + 6) % 7;
+HOURS.forEach(([d, h], i) => {
+  const li = document.createElement("li");
+  if (i === todayIdx) li.classList.add("today");
+  li.innerHTML = `<span>${d}</span><span>${h}</span>`;
+  hoursList.appendChild(li);
+});
+
+document.getElementById("year").textContent = new Date().getFullYear();
+
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener("click", e => {
+    const href = a.getAttribute("href");
+    if (href.length > 1 && document.querySelector(href)) {
+      e.preventDefault();
+      document.querySelector(href).scrollIntoView({behavior: "smooth", block: "start"});
+    }
+  });
+});
+</script>
+</body>
+</html>
